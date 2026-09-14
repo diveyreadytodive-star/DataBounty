@@ -6,6 +6,12 @@
 
 이 문서는 공개 가능한 객체 ID, transaction digest, 정적 검증 결과만 기록합니다. private key, API key, cookie, signature, 평문, salt, 지갑 잔액은 포함하지 않습니다.
 
+## 공개 정적 미리보기 상태
+
+Vercel 공개 미리보기 URL은 아직 배포 전입니다. 배포가 확인되면 검증된 URL과 확인 날짜를 이 절에 추가합니다.
+
+예정된 공개 화면은 UI·아키텍처·이 문서의 Testnet 증거를 읽어 보는 정적 미리보기입니다. 이 호스팅은 live API, auth, wallet signature, submission, Walrus·Seal 처리, AI review, reviewer 권한 변경, payout, refund 또는 콘테스트 제출을 제공하거나 검증하지 않습니다. 따라서 정적 화면의 접근 가능 여부는 아래 on-chain 증거, 자동 테스트, 또는 미완료 E2E 항목의 상태를 바꾸지 않습니다.
+
 ## 1. 현재 Testnet package
 
 | 항목 | 값 |

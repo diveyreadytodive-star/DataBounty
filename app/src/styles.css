@@ -12,17 +12,20 @@ code { overflow-wrap: anywhere; font-family: ui-monospace, SFMono-Regular, Conso
 .shell { max-width: 1440px; margin: 0 auto; padding: 1rem; }
 .topbar, .connection, .section-heading, .detail-title, .result-heading { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
 .topbar { align-items: flex-start; padding-bottom: .75rem; border-bottom: 2px solid #111; }
-.brand-lockup { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: .6rem; }
-.brand-lockup::before { content: 'DB'; display: grid; grid-row: 1 / span 2; place-items: center; width: 2rem; height: 2rem; border: 2px solid #111; color: #111; font: 700 .72rem/1 ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: -.08em; }
-.brand-lockup strong, .brand-lockup .subtitle { grid-column: 2; }
+.brand-lockup { display: grid; gap: .15rem; }
+.brand-lockup strong { color: #111; font-family: "URW Chancery L", "Apple Chancery", "Segoe Print", "Bradley Hand", cursive; font-size: clamp(1.7rem, 4vw, 2.35rem); font-weight: 900; letter-spacing: -.05em; line-height: .95; }
 .subtitle { display: block; color: #555; font-size: .78rem; font-weight: 400; }
 .connection { flex-wrap: wrap; font-size: .85rem; }
+.preview-label { color: #111; font-size: .78rem; font-weight: 750; }
 .overview { padding: .9rem 0; border-bottom: 1px solid #999; }
 .overview p { margin: 0 0 .55rem; }
 .status-list { display: flex; flex-wrap: wrap; gap: .3rem .55rem; font-size: .78rem; }
 .status-list span { border: 1px solid #777; padding: .2rem .35rem; }
 .notice { margin: .8rem 0; border: 1px solid #111; padding: .7rem; }
 .notice-error { border-width: 2px; }
+.preview-banner, .preview-message { border: 1px solid #777; background: #fafafa; color: #333; font-size: .82rem; line-height: 1.45; }
+.preview-banner { display: grid; gap: .2rem; margin-top: .8rem; padding: .7rem; }
+.preview-message { margin: 0; padding: .75rem; }
 .workspace-grid { display: grid; grid-template-areas: "requester board reviewer"; grid-template-columns: minmax(220px, .7fr) minmax(380px, 1.6fr) minmax(270px, .9fr); gap: .75rem; align-items: start; margin-top: .8rem; }
 .requester-panel { grid-area: requester; }
 .board-panel { grid-area: board; }

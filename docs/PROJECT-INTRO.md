@@ -32,6 +32,12 @@ DataBounty의 요청자는 과제와 보상을 여는 팀이고, 기여자는 �
 - Observed reward and state: `10,000,000 MIST` (`0.01` Testnet SUI), `OPEN`
 - Automated verification: app 9, server 12, Move 22 tests plus typecheck, lint, and production build passed
 
+## 공개 정적 미리보기
+
+공개 Vercel UI 미리보기는 아직 URL이 확정되지 않았습니다. 배포를 확인한 뒤 이 문서와 README에 검증된 URL을 추가합니다.
+
+이 미리보기는 DataBounty의 화면 흐름과 아키텍처, 그리고 아래 Testnet 증거를 공개적으로 검토하기 위한 읽기 전용 정적 화면입니다. live API, 인증, 지갑 서명, 실제 제출, Walrus·Seal 접근, AI 검토, reviewer 권한 변경, payout, refund, 콘테스트 제출 기능은 연결하지 않습니다. 따라서 호스팅된 화면을 열어 본 사실은 그러한 통합 또는 end-to-end 동작의 증거가 아닙니다.
+
 ## 현재 한계
 
 Package 배포와 한 건의 Testnet escrow 생성은 검증됐습니다. 그러나 현재 서버 재시작 뒤 requester browser authentication, 두 지갑의 암호화 제출, live AI review와 citation, approval payout, deadline refund, revoke 뒤 fresh Seal denial을 하나의 end-to-end 흐름으로 아직 완료하지 않았습니다. 따라서 DataBounty는 이 단계들을 완료하기 전까지 완성된 두 지갑 payout/refund 데모라고 주장하지 않습니다.

@@ -2,6 +2,12 @@
 
 상태: 실제 package 배포와 보상 escrow까지 검증됨. contributor 제출, AI review, payout/refund browser E2E는 진행 중이며 제출 전 새 증거로 갱신해야 함.
 
+## 공개 정적 미리보기 고지
+
+Vercel 공개 미리보기 URL은 아직 배포 전입니다. 배포가 확인되면 검증된 URL을 이 문서에 추가합니다.
+
+공개 화면은 UI·아키텍처·확인된 Testnet package와 escrow 증거를 읽어 보는 정적 미리보기입니다. live API, auth, 실제 contribution submission, Walrus·Seal 처리, AI review, reviewer 권한 변경, payout, refund, 콘테스트 제출을 제공하거나 증명하지 않습니다. 이 화면의 공개는 submission 완료나 end-to-end 동작 증거가 아닙니다.
+
 ## 이름과 한 줄 소개
 
 **DataBounty — Encrypted data contribution with human-approved Sui payout.**

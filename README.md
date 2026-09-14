@@ -21,6 +21,14 @@
 
 상세 증거와 미완료 범위는 [검증 기록](artifacts/verification.md), 시연 순서는 [데모 스크립트](docs/DEMO-SCRIPT.md), 제출 문안은 [SUBMISSION](docs/SUBMISSION.md), package 배포 정보는 [DEPLOYMENT](contracts/DEPLOYMENT.md)를 참고하세요.
 
+## 공개 정적 미리보기 범위
+
+Vercel 공개 미리보기 URL은 아직 배포 전입니다. 배포가 확인되면 이 문서에 검증된 URL을 추가합니다.
+
+그 미리보기는 DataBounty의 **정적 UI, 구조 설명, 그리고 이미 기록된 Testnet package·escrow 증거를 읽어 보는 공개 화면**입니다. 서버나 비밀 설정을 포함하지 않으며, 방문자의 지갑이나 데이터를 사용하지 않습니다.
+
+따라서 공개 미리보기는 live API, 지갑 인증, 기여자 제출, Walrus·Seal 처리, AI 검토, reviewer 권한 부여·회수, payout, refund 또는 콘테스트 제출을 제공하거나 증명하지 않습니다. 실제 통합의 현재 증거와 E2E 한계는 [검증 기록](artifacts/verification.md)을 기준으로 합니다.
+
 ## 데모 과제
 
 모든 데모 입력은 합성 자료입니다. 초기 시연은 `한국어 피싱 문자 분류 학습용 사례 1건`을 사용하며, 공개 스키마는 `message`, `scam_type`, `red_flags`, `redacted_source_note`입니다.

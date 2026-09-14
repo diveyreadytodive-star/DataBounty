@@ -6,6 +6,12 @@ export const DEFAULT_TESTNET_CONFIG = {
   walrusAggregatorUrl: 'https://aggregator.walrus-testnet.walrus.space',
 } as const;
 
+export type PublicMode = 'local' | 'preview';
+
+function publicMode(value: string | undefined): PublicMode {
+  return value === 'preview' ? 'preview' : 'local';
+}
+
 function configuredObjectId(value: string | undefined): ObjectId | null {
   if (!value) return null;
   try {
@@ -16,7 +22,10 @@ function configuredObjectId(value: string | undefined): ObjectId | null {
 }
 
 export function createConfig(environment: Record<string, string | undefined> = import.meta.env) {
+  const mode = publicMode(environment.VITE_PUBLIC_MODE);
   return {
+    publicMode: mode,
+    isPublicPreview: mode === 'preview',
     apiBaseUrl: environment.VITE_API_BASE_URL?.replace(/\/$/, '') ?? '',
     network: environment.VITE_SUI_NETWORK ?? 'testnet',
     grpcUrl: environment.VITE_SUI_GRPC_URL ?? 'https://fullnode.testnet.sui.io:443',
@@ -37,9 +46,9 @@ export const config = createConfig();
 
 export function getIntegrationReadiness(currentConfig = config) {
   return {
-    package: currentConfig.packageId !== null,
-    seal: currentConfig.packageId !== null && currentConfig.sealServerIds.length > 0 && Boolean(currentConfig.sealAggregatorUrl),
-    walrus: Boolean(currentConfig.walrusAggregatorUrl),
+    package: !currentConfig.isPublicPreview && currentConfig.packageId !== null,
+    seal: !currentConfig.isPublicPreview && currentConfig.packageId !== null && currentConfig.sealServerIds.length > 0 && Boolean(currentConfig.sealAggregatorUrl),
+    walrus: !currentConfig.isPublicPreview && Boolean(currentConfig.walrusAggregatorUrl),
   };
 }
 

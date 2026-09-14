@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+.runtime/
+.omx/
+data/
+server/data/
+node_modules/
+app/node_modules/
+app/dist/
+server/dist/
+contracts/build/
+contracts/.move/
+coverage/
+README 2.md
+GOAL-PROMPT.md
+research/

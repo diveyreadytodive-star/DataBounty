@@ -5,7 +5,8 @@ import { config } from '../config';
 export const dAppKit = createDAppKit({
   networks: ['testnet'],
   createClient: (network) => new SuiGrpcClient({ network, baseUrl: config.grpcUrl }),
-  autoConnect: true,
+  // Public Vercel builds must never restore or prompt for a wallet session.
+  autoConnect: !config.isPublicPreview,
   storage: localStorage,
   storageKey: 'databounty-wallet',
 });
