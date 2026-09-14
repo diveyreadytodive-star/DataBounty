@@ -1,0 +1,10 @@
+[package]
+name = "databounty"
+edition = "2024.beta"
+
+[dependencies]
+Sui = { local = "/Users/blanco/.move/https___github_com_MystenLabs_sui_git_testnet/crates/sui-framework/packages/sui-framework" }
+
+[addresses]
+draftproof = "0x0"
+databounty = "0x0"

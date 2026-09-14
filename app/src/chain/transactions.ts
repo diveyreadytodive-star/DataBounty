@@ -1,0 +1,19 @@
+import { Transaction } from '@mysten/sui/transactions';
+import type { ObjectId } from '../domain';
+import { config } from '../config';
+import { fromHex, utf8 } from '../crypto/bytes';
+function target(name: string): string { if (!config.packageId) throw new Error('DataBounty is not configured. Set VITE_DATABOUNTY_PACKAGE_ID before submitting a transaction.'); return `${config.packageId}::databounty::${name}`; }
+function bytes(tx: Transaction, value: Uint8Array) { return tx.pure.vector('u8', [...value]); }
+function id(tx: Transaction, value: ObjectId) { return tx.object(value); }
+const CLOCK_ID = '0x6';
+export function createBountyTx(publicTaskSpec: string, deadlineMs: string, rewardMist: string): Transaction { const tx = new Transaction(); const [reward] = tx.splitCoins(tx.gas, [tx.pure.u64(rewardMist)]); tx.moveCall({ target: target('create_bounty'), arguments: [bytes(tx, utf8(publicTaskSpec)), tx.pure.u64(deadlineMs), reward, tx.object(CLOCK_ID)] }); return tx; }
+export function reserveSubmissionTx(bountyId: ObjectId, commitment: string): Transaction { const tx = new Transaction(); tx.moveCall({ target: target('reserve_submission'), arguments: [id(tx, bountyId), bytes(tx, fromHex(commitment, 32)), tx.object(CLOCK_ID)] }); return tx; }
+export function finalizeSubmissionTx(bountyId: ObjectId, submissionId: ObjectId, blobId: string, digest: string, storageEndEpoch: string): Transaction { const tx = new Transaction(); tx.moveCall({ target: target('finalize_submission'), arguments: [id(tx, bountyId), id(tx, submissionId), bytes(tx, utf8(blobId)), bytes(tx, fromHex(digest, 32)), tx.pure.u64(storageEndEpoch), tx.object(CLOCK_ID)] }); return tx; }
+export function abandonSubmissionTx(bountyId: ObjectId, submissionId: ObjectId): Transaction { const tx = new Transaction(); tx.moveCall({ target: target('abandon_submission'), arguments: [id(tx, bountyId), id(tx, submissionId), tx.object(CLOCK_ID)] }); return tx; }
+export function grantReviewerTx(bountyId: ObjectId, submissionId: ObjectId, reviewer: string, expiresAtMs: string): Transaction { const tx = new Transaction(); tx.moveCall({ target: target('grant_reviewer_read'), arguments: [id(tx, bountyId), id(tx, submissionId), tx.pure.address(reviewer), tx.pure.u64(expiresAtMs), tx.object(CLOCK_ID)] }); return tx; }
+export function revokeReviewerTx(bountyId: ObjectId, submissionId: ObjectId, reviewer: string): Transaction { const tx = new Transaction(); tx.moveCall({ target: target('revoke_reviewer_read'), arguments: [id(tx, bountyId), id(tx, submissionId), tx.pure.address(reviewer), tx.object(CLOCK_ID)] }); return tx; }
+export function rejectSubmissionTx(bountyId: ObjectId, submissionId: ObjectId): Transaction { const tx = new Transaction(); tx.moveCall({ target: target('reject_submission'), arguments: [id(tx, bountyId), id(tx, submissionId), tx.object(CLOCK_ID)] }); return tx; }
+export function approveSubmissionAndPayTx(bountyId: ObjectId, submissionId: ObjectId): Transaction { const tx = new Transaction(); tx.moveCall({ target: target('approve_submission_and_pay'), arguments: [id(tx, bountyId), id(tx, submissionId), tx.object(CLOCK_ID)] }); return tx; }
+export function cancelOpenBountyTx(bountyId: ObjectId): Transaction { const tx = new Transaction(); tx.moveCall({ target: target('cancel_open_bounty'), arguments: [id(tx, bountyId), tx.object(CLOCK_ID)] }); return tx; }
+export function refundExpiredBountyTx(bountyId: ObjectId): Transaction { const tx = new Transaction(); tx.moveCall({ target: target('refund_expired_bounty'), arguments: [id(tx, bountyId), tx.object(CLOCK_ID)] }); return tx; }
+export function sealApprovalTx(bountyId: ObjectId, submissionId: ObjectId, identity: Uint8Array): Transaction { const tx = new Transaction(); tx.moveCall({ target: target('seal_approve'), arguments: [bytes(tx, identity), id(tx, bountyId), id(tx, submissionId), tx.object(CLOCK_ID)] }); return tx; }

@@ -1,0 +1,24 @@
+{
+  "product": "DataBounty",
+  "network": "testnet",
+  "status": "deployed",
+  "packageId": "0xf7923bd34625af96c40e27187371f231fca6bca7d25d244fe72244ec9a89b0aa",
+  "module": "databounty::databounty",
+  "publishTransactionDigest": "Bs8bzmXu7urPZ9ufyimLmBEqt7gLo9fZDa95yUEv9yia",
+  "packageObjectDigest": "7rZwiYNiYJi5yYWJgHenF8kf41cbJXHoaYsTzmYNEU7Y",
+  "upgradeCapId": "0x9e3c3e7d595118898d1830f80cc4508da01fad9da05b702a8bde8cf7a7520e73",
+  "publishedAtEpoch": "1221",
+  "checkpoint": "383282141",
+  "sourceVerified": true,
+  "note": "Current DataBounty deployment. The historical DraftProof package below is archived and must not be used by the app.",
+  "archivedDraftProof": {
+    "packageId": "0xca75e449585b717ae2f7ae7bb9902a89873087fdc51f4639349a9b98cee019c3",
+    "module": "draftproof::draftproof",
+    "publishTransactionDigest": "H1RoKJrbAj6dhEdpMb5QXwDPL7xU8FF2LBqwMpdvnAFY",
+    "packageObjectDigest": "yc8jDZknvMJ6Py8xJRy4UmBszEjsrbAmAVMYd6JZD7M",
+    "upgradeCapId": "0x61c02067c0cab587da8b2d41ee5bc6657e130ce01d15bf8fe3eda1b8350d40c3",
+    "publishedAtEpoch": "1220",
+    "checkpoint": "382758090",
+    "suiCliVersion": "1.73.1-ff1fe0ec4551"
+  }
+}

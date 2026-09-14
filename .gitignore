@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.runtime/
+.omx/
+*.db
+*.db-shm
+*.db-wal
+*.tsbuildinfo
+contracts/build/
+contracts/.move/
+README 2.md
+GOAL-PROMPT.md
+research/
+coverage/
+.DS_Store
