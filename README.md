@@ -79,6 +79,19 @@ AI_MODEL=mlx-community/Qwen3-1.7B-4bit
 
 `AI_API_KEY`는 로컬 provider용 non-empty placeholder여도 됩니다. `REVIEWER_DELEGATE_PRIVATE_KEY`, `COOKIE_SECRET`, `SEAL_API_KEY`, 실제 API 키와 `.env`는 절대 커밋하거나 화면에 표시하지 않습니다. `DATABOUNTY_PACKAGE_ID`와 `VITE_DATABOUNTY_PACKAGE_ID`에는 현재 package ID를 넣습니다.
 
+### 향후 Groq 전환 (현재 비활성)
+
+`.env.example`의 `GROQ_*` 값은 참고용이며 앱이 읽지 않습니다. 전환할 때는 노출된 키를 먼저 폐기·교체한 뒤, 새 Groq 키를 로컬 `.env`의 서버 전용 설정 또는 Vercel 프로젝트의 서버 secret에 넣고 기존 `AI_*` 항목을 다음처럼 설정합니다.
+
+```dotenv
+AI_PROVIDER=openai-compatible
+AI_BASE_URL=https://api.groq.com/openai/v1
+AI_API_KEY=<rotated-groq-key>
+AI_MODEL=<supported-groq-model>
+```
+
+`GROQ_*` 값을 `VITE_*`로 복사하거나 브라우저 코드에 넣지 않습니다. 현재 로컬 데모의 기본 provider는 위 MLX 설정을 유지합니다.
+
 ```sh
 # terminal 1
 npm run start:local-ai

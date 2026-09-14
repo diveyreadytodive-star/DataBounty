@@ -8,6 +8,7 @@
 
 - `npm run setup:local-ai`를 한 번 실행하고 `npm run start:local-ai`로 local Qwen server를 시작합니다.
 - `.env`에는 `AI_PROVIDER=mlx-local`, `AI_BASE_URL=http://127.0.0.1:8092/v1`, `AI_MODEL=mlx-community/Qwen3-1.7B-4bit`를 설정합니다. 비밀값은 화면에 보이지 않게 합니다.
+- Groq 전환은 현재 비활성입니다. 필요할 때 노출된 키를 먼저 교체하고, 새 키를 로컬 `.env` 또는 Vercel의 서버 secret에 넣은 뒤 `AI_PROVIDER=openai-compatible`, `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL`을 설정합니다. `GROQ_*`나 키를 `VITE_*`로 복사하지 않고 브라우저에 노출하지 않습니다.
 - 다른 터미널에서 `npm run build && npm start`를 실행하고 `http://127.0.0.1:3000`을 엽니다.
 - 요청자 A와 기여자 B를 서로 다른 Sui Testnet 지갑으로 준비합니다. Bounty `0x0f0ce45bc348bec4e7a2cd740b79ad6c9987c9cbb90413de0bcf6a58a7b018c4`는 A가 만든 현재 demo Bounty입니다.
 - 서버를 현재 build로 재시작한 뒤 Slush personal-message와 Bounty load를 같은 브라우저 세션에서 끝까지 리허설합니다. 이 browser-auth E2E는 아직 증명되지 않았습니다.
