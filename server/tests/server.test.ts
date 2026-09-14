@@ -53,6 +53,10 @@ test('static assets are served before the SPA fallback', { skip: !existsSync(sta
   assert.equal(asset.statusCode, 200);
   assert.match(asset.headers['content-type'] ?? '', /^application\/javascript/);
   assert.equal(asset.body, readFileSync(resolve(staticAssetsRoot, assetName), 'utf8'));
+  const root = await app.inject({ method: 'GET', url: '/' });
+  assert.equal(root.statusCode, 200);
+  assert.match(root.headers['content-type'] ?? '', /^text\/html/);
+  assert.equal(root.body, readFileSync(resolve(staticAssetsRoot, '..', 'index.html'), 'utf8'));
   const deepLink = await app.inject({ method: 'GET', url: '/review/new-request' });
   assert.equal(deepLink.statusCode, 200);
   assert.match(deepLink.headers['content-type'] ?? '', /^text\/html/);

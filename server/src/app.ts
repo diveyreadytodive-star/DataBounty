@@ -51,6 +51,7 @@ export async function createApp(dependencies: AppDependencies = {}): Promise<Fas
   const staticRoot = resolve(fileURLToPath(new URL('../../app/dist/', import.meta.url)));
   if (existsSync(staticRoot)) {
     await app.register(fastifyStatic, { root: staticRoot, wildcard: true, index: false });
+    app.get('/', (_request, reply) => reply.sendFile('index.html'));
     app.setNotFoundHandler((request, reply) => {
       if (request.url.startsWith('/api/')) return reply.status(404).send({ error: { code: 'INVALID_REQUEST', message: 'API route was not found', retryable: false, requestId: request.id } });
       return reply.sendFile('index.html');
