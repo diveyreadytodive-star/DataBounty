@@ -8,9 +8,9 @@
 
 ## 공개 정적 미리보기 상태
 
-Vercel 공개 미리보기 URL은 아직 배포 전입니다. 배포가 확인되면 검증된 URL과 확인 날짜를 이 절에 추가합니다.
+공식 공개 미리보기 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)는 정적 읽기 전용 화면이 로드되는 것을 확인했습니다. 확인한 Vercel deployment는 [https://databounty-5kc0tpywk-momento5.vercel.app](https://databounty-5kc0tpywk-momento5.vercel.app)이고, 연결된 commit은 `5802c96`입니다.
 
-예정된 공개 화면은 UI·아키텍처·이 문서의 Testnet 증거를 읽어 보는 정적 미리보기입니다. 이 호스팅은 live API, auth, wallet signature, submission, Walrus·Seal 처리, AI review, reviewer 권한 변경, payout, refund 또는 콘테스트 제출을 제공하거나 검증하지 않습니다. 따라서 정적 화면의 접근 가능 여부는 아래 on-chain 증거, 자동 테스트, 또는 미완료 E2E 항목의 상태를 바꾸지 않습니다.
+공개 화면은 UI·아키텍처·이 문서의 Testnet 증거를 읽어 보는 정적 미리보기입니다. 지갑 연결·인증, API 호출, 업로드와 submission, AI review, payout, refund, cancel은 비활성화되어 있습니다. Walrus·Seal 처리와 reviewer 권한 변경도 연결하지 않습니다. 따라서 정적 화면의 접근 가능 여부는 live backend 증거가 아니며, 아래 on-chain 증거, 자동 테스트, 또는 미완료 E2E 항목의 상태를 바꾸지 않습니다.
 
 ## 1. 현재 Testnet package
 

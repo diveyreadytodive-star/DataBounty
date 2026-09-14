@@ -34,9 +34,9 @@ DataBounty의 요청자는 과제와 보상을 여는 팀이고, 기여자는 �
 
 ## 공개 정적 미리보기
 
-공개 Vercel UI 미리보기는 아직 URL이 확정되지 않았습니다. 배포를 확인한 뒤 이 문서와 README에 검증된 URL을 추가합니다.
+공식 공개 미리보기는 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)이며, 정적 읽기 전용 화면이 로드되는 것을 확인했습니다.
 
-이 미리보기는 DataBounty의 화면 흐름과 아키텍처, 그리고 아래 Testnet 증거를 공개적으로 검토하기 위한 읽기 전용 정적 화면입니다. live API, 인증, 지갑 서명, 실제 제출, Walrus·Seal 접근, AI 검토, reviewer 권한 변경, payout, refund, 콘테스트 제출 기능은 연결하지 않습니다. 따라서 호스팅된 화면을 열어 본 사실은 그러한 통합 또는 end-to-end 동작의 증거가 아닙니다.
+이 미리보기는 DataBounty의 화면 흐름과 아키텍처, 그리고 아래 Testnet 증거를 공개적으로 검토하기 위한 읽기 전용 정적 화면입니다. 지갑 연결·인증, API 호출, 업로드와 실제 제출, AI 검토, payout, refund, cancel은 비활성화되어 있습니다. Walrus·Seal 접근과 reviewer 권한 변경도 연결하지 않으므로, 호스팅된 화면이 로드된 사실은 live backend 또는 end-to-end 동작의 증거가 아닙니다.
 
 ## 현재 한계
 

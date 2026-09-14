@@ -4,9 +4,9 @@
 
 ## 공개 정적 미리보기 고지
 
-Vercel 공개 미리보기 URL은 아직 배포 전입니다. 배포가 확인되면 검증된 URL을 이 문서에 추가합니다.
+공식 공개 미리보기는 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)이며, 정적 읽기 전용 화면이 로드되는 것을 확인했습니다.
 
-공개 화면은 UI·아키텍처·확인된 Testnet package와 escrow 증거를 읽어 보는 정적 미리보기입니다. live API, auth, 실제 contribution submission, Walrus·Seal 처리, AI review, reviewer 권한 변경, payout, refund, 콘테스트 제출을 제공하거나 증명하지 않습니다. 이 화면의 공개는 submission 완료나 end-to-end 동작 증거가 아닙니다.
+공개 화면은 UI·아키텍처·확인된 Testnet package와 escrow 증거를 읽어 보는 정적 미리보기입니다. 지갑 연결·인증, API 호출, 업로드와 실제 contribution submission, AI review, payout, refund, cancel은 비활성화되어 있습니다. Walrus·Seal 처리와 reviewer 권한 변경도 연결하지 않습니다. 이 화면의 공개는 live backend, submission 완료, 또는 end-to-end 동작 증거가 아닙니다.
 
 ## 이름과 한 줄 소개
 
