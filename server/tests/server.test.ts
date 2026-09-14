@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { EncryptedObject } from '@mysten/seal';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
@@ -40,6 +43,29 @@ class Seal implements SealReader { calls = 0; delegateAddress(_role: AgentRole):
 class Provider implements AiProvider { calls = 0; async generateReview(): Promise<ReviewProviderOutput> { this.calls += 1; return { model: 'test-model', recommendation: 'RECOMMEND_ACCEPT', checklist: [{ field: 'message', status: 'PRESENT', citationIds: [0] }], duplicateCandidates: [], citations: [{ submissionId: SUBMISSION, quote: 'message: 합성 피싱 사례', startByte: 0, endByte: Buffer.byteLength('message: 합성 피싱 사례') }] }; } async health(): Promise<boolean> { return true; } }
 async function setup() { const db = new DraftProofDb(':memory:'); const chain = new Chain(); const storage = new Storage(); const seal = new Seal(); const provider = new Provider(); const app = await createApp({ config: config(), db, verifier: new Verifier(), chain, storage, seal, provider }); return { app, db, chain, storage, seal, provider }; }
 async function login(app: Awaited<ReturnType<typeof createApp>>): Promise<string> { const headers = { origin: 'http://app.test' }; const challenge = await app.inject({ method: 'POST', url: '/api/auth/challenge', headers, payload: { address: OWNER } }); const body = challenge.json() as { challengeId: string; message: string }; const verified = await app.inject({ method: 'POST', url: '/api/auth/verify', headers, payload: { challengeId: body.challengeId, message: body.message, signature: 'test' } }); return verified.headers['set-cookie']!; }
+
+const staticAssetsRoot = resolve(fileURLToPath(new URL('../../app/dist/assets/', import.meta.url)));
+test('static assets are served before the SPA fallback', { skip: !existsSync(staticAssetsRoot) }, async () => {
+  const assetName = readdirSync(staticAssetsRoot).find((name) => name.endsWith('.js'));
+  assert.ok(assetName, 'expected a built JavaScript asset');
+  const { app, db } = await setup();
+  const asset = await app.inject({ method: 'GET', url: `/assets/${assetName}` });
+  assert.equal(asset.statusCode, 200);
+  assert.match(asset.headers['content-type'] ?? '', /^application\/javascript/);
+  assert.equal(asset.body, readFileSync(resolve(staticAssetsRoot, assetName), 'utf8'));
+  const deepLink = await app.inject({ method: 'GET', url: '/review/new-request' });
+  assert.equal(deepLink.statusCode, 200);
+  assert.match(deepLink.headers['content-type'] ?? '', /^text\/html/);
+  assert.match(deepLink.body, /<div id="root"><\/div>/);
+  const api404 = await app.inject({ method: 'GET', url: '/api/does-not-exist' });
+  assert.equal(api404.statusCode, 404);
+  const apiError = api404.json().error as Record<string, unknown>;
+  assert.equal(apiError.code, 'INVALID_REQUEST');
+  assert.equal(apiError.message, 'API route was not found');
+  assert.equal(apiError.retryable, false);
+  assert.equal(typeof apiError.requestId, 'string');
+  await app.close(); db.close();
+});
 
 test('D03 Seal identity is exactly two canonical 32-byte IDs', () => { const identity = encodeSealIdentity(BOUNTY, SUBMISSION); assert.equal(identity.byteLength, 64); assert.equal(Buffer.from(identity).toString('hex'), `${BOUNTY.slice(2)}${SUBMISSION.slice(2)}`); assert.deepEqual(decodeSubmissionBundle(bundle()), { formatVersion: 1, bountyId: BOUNTY, submissionId: SUBMISSION, salt, content }); assert.throws(() => decodeSubmissionBundle(Buffer.concat([bundle(), Buffer.from([0])]))) });
 test('D04/D05 access and selected comparison checks happen before provider use', async () => { const { app, db, provider, chain, seal } = await setup(); const cookie = await login(app); const headers = { origin: 'http://app.test', cookie }; chain.bounty = { ...chain.bounty, submissionIds: [SUBMISSION] }; chain.submissions.get(SUBMISSION)!.reviewerGrants = []; let response = await app.inject({ method: 'POST', url: `/api/bounties/${BOUNTY}/reviews`, headers, payload: { requestId: randomUUID(), submissionId: SUBMISSION, comparisonSubmissionIds: [] } }); assert.equal(response.statusCode, 403); assert.equal(provider.calls, 0); assert.equal(seal.calls, 0); chain.submissions.get(SUBMISSION)!.reviewerGrants = [{ reviewer: REVIEWER, expiresAtMs: String(Date.now() + 60_000), revoked: false, grantRevision: '1' }]; response = await app.inject({ method: 'POST', url: `/api/bounties/${BOUNTY}/reviews`, headers, payload: { requestId: randomUUID(), submissionId: SUBMISSION, comparisonSubmissionIds: [COMPARISON] } }); assert.equal(response.statusCode, 200); assert.equal(provider.calls, 1); await app.close(); db.close(); });

@@ -50,7 +50,7 @@ export async function createApp(dependencies: AppDependencies = {}): Promise<Fas
   app.get('/api/health', async (): Promise<HealthResponse> => { const [sui, sealHealthy, walrus, ai] = await Promise.all([chain.health(), seal.health(), storage.health(), provider.health()]); const dependenciesStatus = { sqlite: 'ok', sui: sui ? 'ok' : 'blocked', seal: sealHealthy ? 'ok' : 'blocked', walrusPublisher: walrus.publisher ? 'ok' : 'blocked', walrusAggregator: walrus.aggregator ? 'ok' : 'blocked', ai: ai ? 'ok' : 'blocked' } as const; const status = Object.values(dependenciesStatus).every((value) => value === 'ok') ? 'ok' : 'blocked'; return { status, network: 'testnet', packageConfigured: config.packageId !== undefined, dependencies: dependenciesStatus }; });
   const staticRoot = resolve(fileURLToPath(new URL('../../app/dist/', import.meta.url)));
   if (existsSync(staticRoot)) {
-    await app.register(fastifyStatic, { root: staticRoot, wildcard: false, index: false });
+    await app.register(fastifyStatic, { root: staticRoot, wildcard: true, index: false });
     app.setNotFoundHandler((request, reply) => {
       if (request.url.startsWith('/api/')) return reply.status(404).send({ error: { code: 'INVALID_REQUEST', message: 'API route was not found', retryable: false, requestId: request.id } });
       return reply.sendFile('index.html');
