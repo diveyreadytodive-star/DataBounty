@@ -1,7 +1,7 @@
 # Blockthon 2026 — DataBounty 제출 기록
 
-- 상태: **제출 완료** (2026-09-14 사용자 보고)
-- 결과 확인: 2026-09-16 본선 진출팀 발표
+- 상태: **본선 진출** (2026-09-16 사용자 보고)
+- 다음 일정: 2026-09-19 오프라인 Hackathon & Demo Day
 - 제출 프로젝트: **DataBounty**
 
 ## 제출 링크
@@ -36,6 +36,6 @@
 
 ## 결과 이후 다음 행동
 
-1. 09-16 본선 진출 결과 확인
-2. 진출 시 contributor 제출 → reviewer grant → AI citation → human-approved payout을 리허설
+1. contributor 제출 → reviewer grant → AI citation → human-approved payout을 Demo Day 흐름으로 리허설
+2. 2분 발표와 역할 분담 확정
 3. 실제 공개 backend는 영속 DB, hosted AI, Vercel server secrets, 공개 도메인 검증 이후에만 전환
