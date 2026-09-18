@@ -31,6 +31,7 @@ export interface ReviewerGrantSummary { reviewer: SuiAddress; expiresAtMs: strin
 export interface BountySummary { id: ObjectId; requester: SuiAddress; publicTaskSpec: string; rewardMist: string; deadlineMs: string; state: BountyState; acceptedSubmissionId: ObjectId | null; readySubmissionCount: number; checkpoint: string; }
 export interface SubmissionSummary { id: ObjectId; bountyId: ObjectId; contributor: SuiAddress; contentCommitment: Sha256Hex; state: SubmissionState; blobId: WalrusBlobId | null; ciphertextDigest: Sha256Hex | null; storageEndEpoch: string | null; reservedAtMs: string; finalizedAtMs: string | null; }
 export interface BountyResponse { bounty: BountySummary; submissions: SubmissionSummary[]; }
+export interface PublicBountyBoardResponse { bounties: BountySummary[]; observedAt: string; }
 export interface StoragePublishRequest { bountyId: ObjectId; submissionId: ObjectId; ciphertextBase64: string; ciphertextDigest: Sha256Hex; }
 export interface StoragePublishResponse { bountyId: ObjectId; submissionId: ObjectId; blobId: WalrusBlobId; ciphertextDigest: Sha256Hex; storageEndEpoch: string; publisherReceipt: string; verifiedDownloadAt: string; }
 export interface ReviewRequest { requestId: string; submissionId: ObjectId; comparisonSubmissionIds: ObjectId[]; }

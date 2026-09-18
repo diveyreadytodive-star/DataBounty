@@ -8,7 +8,6 @@ server/data/
 node_modules/
 app/node_modules/
 app/dist/
-server/dist/
 contracts/build/
 contracts/.move/
 coverage/

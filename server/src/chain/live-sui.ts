@@ -53,6 +53,20 @@ export class LiveSuiGateway implements ChainGateway {
   private readonly client: SuiGrpcClient;
   constructor(private readonly config: Config) { this.client = new SuiGrpcClient({ network: 'testnet', baseUrl: config.suiGrpcUrl }); }
   async health(): Promise<boolean> { try { await this.client.getBalance({ owner: '0x0000000000000000000000000000000000000000000000000000000000000000' }); return true; } catch { return false; } }
+  async listBounties(): Promise<ChainBounty[]> {
+    if (!this.config.packageId) throw new ApiError('CHAIN_UNAVAILABLE', 'DataBounty package is not configured', 503);
+    try {
+      const page = await this.client.listEvents({ filter: { emitModule: `${this.config.packageId}::databounty` }, limit: 50 });
+      const ids = [...new Set(page.events
+        .filter((event) => event.eventType === `${this.config.packageId}::databounty::BountyCreated`)
+        .map((event) => event.json?.bounty_id)
+        .filter((id): id is string => typeof id === 'string')
+        .map((id) => objectId(id, 'BountyCreated.bounty_id')))].reverse();
+      const reads = await Promise.all(ids.map(async (id) => { try { return await this.readBounty(id); } catch { return null; } }));
+      const now = BigInt(Date.now());
+      return reads.filter((bounty): bounty is ChainBounty => bounty !== null && bounty.state !== 'PAID' && bounty.state !== 'EXPIRED_REFUNDED' && BigInt(bounty.deadlineMs) > now);
+    } catch (error) { if (error instanceof ApiError) throw error; throw fail.chain(); }
+  }
   async readBounty(id: ObjectId): Promise<ChainBounty> { return decodeBountySummary(id, await this.objectFields(id, 'Bounty')); }
   async readSubmission(id: ObjectId): Promise<ChainSubmission> { return decodeSubmissionSummary(id, await this.objectFields(id, 'Submission')); }
   private async objectFields(id: ObjectId, expected: 'Bounty' | 'Submission'): Promise<Json> {

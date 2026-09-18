@@ -12,7 +12,7 @@
 | Public UI preview | https://databounty-wine.vercel.app |
 | Notion 발표자료 | https://app.notion.com/p/3db43a5370a681448a43f05a8ffa2338?pvs=204 |
 | Technical project introduction | [docs/PROJECT-INTRO.md](../docs/PROJECT-INTRO.md) |
-| Verification record | [artifacts/verification.md](../artifacts/verification.md) |
+| Verification record | [artifacts/verification.md](../artifacts/verification.md) · [live Sui/Walrus/Seal proof](../artifacts/evidence/SUI-WALRUS-SEAL-LIVE-PROOF.md) |
 
 ## 한 줄 정의
 

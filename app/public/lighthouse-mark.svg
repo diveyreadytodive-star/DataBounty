@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Lighthouse red beacon mark</title>
+  <defs>
+    <linearGradient id="red" x1="0" x2="1"><stop stop-color="#8c161c"/><stop offset=".5" stop-color="#f15b4e"/><stop offset="1" stop-color="#95171c"/></linearGradient>
+    <linearGradient id="glass" x1="0" x2="1"><stop stop-color="#fffbd0"/><stop offset=".5" stop-color="#ffd469"/><stop offset="1" stop-color="#bd7c23"/></linearGradient>
+  </defs>
+  <path d="M11 58h42" stroke="#46d5df" stroke-linecap="round" stroke-width="3"/>
+  <path d="M17 53h30v4H17z" fill="#49606d"/>
+  <path d="M22 28h20l4 25H18l4-25Z" fill="url(#red)" stroke="#4e1015" stroke-width="2"/>
+  <path d="M20 40h24v7H20z" fill="#fff3dd"/>
+  <path d="M23 22h18v10H23z" rx="2" fill="url(#glass)" stroke="#1e2b35" stroke-width="2"/>
+  <path d="M21 22h22l-2-7H23l-2 7Z" fill="url(#red)" stroke="#4e1015" stroke-width="2"/>
+  <path d="M26 24v7M32 23v9M38 24v7" stroke="#26343d" stroke-width="2"/>
+  <path d="M29 7h6v8h-6z" fill="#ffd76c"/><circle cx="32" cy="11" r="6" fill="#fff8c7" opacity=".5"/>
+  <path d="M6 55c6-3 10 3 16 0s10 3 16 0 10 3 20 0" fill="none" stroke="#62e4e5" stroke-linecap="round" stroke-width="3"/>
+</svg>

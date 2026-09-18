@@ -4,6 +4,7 @@ import { sha256Bytes } from '../validation.js';
 import type { Sha256Hex, StoragePublishResponse, WalrusBlobId } from '../api/types.js';
 
 export interface WalrusStorage { publish(ciphertext: Uint8Array, digest: Sha256Hex): Promise<Omit<StoragePublishResponse, 'bountyId' | 'submissionId' | 'ciphertextDigest'>>; read(blobId: WalrusBlobId): Promise<Uint8Array>; health(): Promise<{ publisher: boolean; aggregator: boolean }>; }
+const isWalrusBlobId = (value: string) => /^[A-Za-z0-9+/_=-]{16,512}$/.test(value);
 
 export class LiveWalrusStorage implements WalrusStorage {
   constructor(private readonly config: Config, private readonly fetchImpl: typeof fetch = fetch) {}
@@ -21,7 +22,7 @@ export class LiveWalrusStorage implements WalrusStorage {
     return { blobId, storageEndEpoch: String(endEpoch), publisherReceipt: typeof parsed.newlyCreated === 'object' ? 'newlyCreated' : 'alreadyCertified', verifiedDownloadAt: new Date().toISOString() };
   }
   async read(blobId: WalrusBlobId): Promise<Uint8Array> {
-    if (!this.config.walrusAggregatorUrl || !/^[A-Za-z0-9_-]{16,200}$/.test(blobId)) throw fail.storage();
+    if (!this.config.walrusAggregatorUrl || !isWalrusBlobId(blobId)) throw fail.storage();
     const url = new URL(`/v1/blobs/${encodeURIComponent(blobId)}`, this.config.walrusAggregatorUrl);
     for (let attempt = 0; attempt < 3; attempt += 1) {
       try { const response = await this.fetchImpl(url); if (response.ok) return new Uint8Array(await response.arrayBuffer()); if (response.status !== 404 && response.status < 500) throw fail.storage(); } catch (error) { if (error instanceof Error && error.name === 'ApiError') throw error; }

@@ -1,6 +1,10 @@
 {
   "framework": "vite",
   "installCommand": "npm ci",
-  "buildCommand": "VITE_PUBLIC_MODE=preview npm run build -w @draftproof/app",
-  "outputDirectory": "app/dist"
+  "buildCommand": "npm run build",
+  "outputDirectory": "app/dist",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }

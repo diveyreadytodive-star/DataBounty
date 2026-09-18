@@ -27,19 +27,22 @@ DataBounty의 요청자는 과제와 보상을 여는 팀이고, 기여자는 �
 - DataBounty package: `0xf7923bd34625af96c40e27187371f231fca6bca7d25d244fe72244ec9a89b0aa`
 - Publish transaction: `Bs8bzmXu7urPZ9ufyimLmBEqt7gLo9fZDa95yUEv9yia`
 - On-chain source verification: succeeded
-- Live Bounty: `0x0f0ce45bc348bec4e7a2cd740b79ad6c9987c9cbb90413de0bcf6a58a7b018c4`
-- Escrow transaction: `9nTbj2uoGH1sLbKhYeWTaNGUNrPEBpFrQXLKrbqrYwok`
-- Observed reward and state: `10,000,000 MIST` (`0.01` Testnet SUI), `OPEN`
-- Automated verification: app 9, server 12, Move 22 tests plus typecheck, lint, and production build passed
+- Live settled Bounty: `0x040467c0954dae110f222af8ca37aa3a67b4a6160454e4a42ff38bffc8ba2bd4`
+- Live accepted Submission: `0xa32ff16c3708e47511583b1548af38917a77cbc7c3bef82be7a3024fa9b31af6`
+- Walrus blob/readback: `EDoj9-ETZbZ10_wlSCTFB3Kl7py-KuDb6Qc1h9byq9c`, exact 1,163-byte digest match
+- Groq review: `openai/gpt-oss-20b`, `RECOMMEND_ACCEPT`, validated UTF-8 citation `0–747`
+- Payout: `9aDuBYceNVdKUDLdZNcq54eCB6K6WZCLVZu18TYLYcaR`; Bounty `PAID`, Submission `ACCEPTED`
+- Fresh post-payout reviewer Seal key request: denied
+- Automated verification: app 17, server 19, Move 22 tests plus typecheck, lint, and production build passed
 
 ## 공개 정적 미리보기
 
-공식 공개 미리보기는 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)이며, 정적 읽기 전용 화면이 로드되는 것을 확인했습니다.
+공식 공개 미리보기는 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)입니다. 최신 production deployment `dpl_71qPR1YchLxByVkJZrkq3qeuACRL`는 HTTP `200` 및 `Lighthouse — DataBounty on Sui Testnet` title로 확인했습니다.
 
 이 미리보기는 DataBounty의 화면 흐름과 아키텍처, 그리고 아래 Testnet 증거를 공개적으로 검토하기 위한 읽기 전용 정적 화면입니다. 지갑 연결·인증, API 호출, 업로드와 실제 제출, AI 검토, payout, refund, cancel은 비활성화되어 있습니다. Walrus·Seal 접근과 reviewer 권한 변경도 연결하지 않으므로, 호스팅된 화면이 로드된 사실은 live backend 또는 end-to-end 동작의 증거가 아닙니다.
 
 ## 현재 한계
 
-Package 배포와 한 건의 Testnet escrow 생성은 검증됐습니다. 그러나 현재 서버 재시작 뒤 requester browser authentication, 두 지갑의 암호화 제출, live AI review와 citation, approval payout, deadline refund, revoke 뒤 fresh Seal denial을 하나의 end-to-end 흐름으로 아직 완료하지 않았습니다. 따라서 DataBounty는 이 단계들을 완료하기 전까지 완성된 두 지갑 payout/refund 데모라고 주장하지 않습니다.
+실제 Testnet flow는 escrow, encrypted submission, Walrus readback, Seal reviewer access, Groq review, requester payout, payout 후 fresh Seal denial까지 검증됐습니다. 다만 해당 live run은 동일 지갑으로 requester와 contributor 역할을 수행했으므로, 서로 다른 두 지갑 재현과 deadline refund는 아직 추가 증거가 필요합니다.
 
 원문·파일명·salt·키·세션은 체인과 일반 metadata DB에 저장하지 않습니다. Seal revoke는 새 key 요청을 막지만 이미 열람·다운로드·모델 입력으로 전달된 평문을 회수하지는 못합니다. Testnet SUI는 실제 현금 보상이 아닙니다.

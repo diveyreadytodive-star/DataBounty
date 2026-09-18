@@ -1,5 +1,7 @@
 import type { AgentRole, ObjectId, SuiAddress } from './api/types.js';
 import { address, objectId } from './validation.js';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { decodeSuiPrivateKey } from '@mysten/sui/cryptography';
 import { Ed25519Keypair } from '@mysten/sui/keypairs/ed25519';
 import { Secp256k1Keypair } from '@mysten/sui/keypairs/secp256k1';
@@ -13,6 +15,10 @@ export interface Config {
   delegates: Record<AgentRole, { privateKey: string | undefined; address: SuiAddress | undefined }>;
   ai: { provider: string; baseUrl: string; apiKey: string; model: string } | undefined;
 }
+
+// Keep local authentication and review metadata in one location even when the
+// server is launched from either the repository root or the server workspace.
+const DEFAULT_SQLITE_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '../../data/databounty.db');
 
 function envString(env: NodeJS.ProcessEnv, key: string, fallback?: string): string | undefined { return env[key] ?? fallback; }
 function positive(env: NodeJS.ProcessEnv, key: string, fallback: number): number { const value = Number(env[key] ?? fallback); if (!Number.isSafeInteger(value) || value <= 0) throw new Error(`${key} must be a positive integer`); return value; }
@@ -51,7 +57,7 @@ export function loadConfig(env = process.env): Config {
     nodeEnv, host: env.HOST ?? '127.0.0.1', port: positive(env, 'PORT', 3000), appOrigin,
     authDomain: env.AUTH_DOMAIN ?? new URL(appOrigin).host, nonceTtlSeconds: positive(env, 'AUTH_NONCE_TTL_SECONDS', 300),
     sessionTtlSeconds: positive(env, 'SESSION_TTL_SECONDS', 3600), cookieSecret: env.COOKIE_SECRET ?? 'development-only-change-me',
-    sqlitePath: env.SQLITE_PATH ?? './data/databounty.db', logLevel: env.LOG_LEVEL ?? 'info',
+    sqlitePath: env.SQLITE_PATH ?? DEFAULT_SQLITE_PATH, logLevel: env.LOG_LEVEL ?? 'info',
     suiGrpcUrl: url(env.SUI_GRPC_URL ?? 'https://fullnode.testnet.sui.io:443', 'SUI_GRPC_URL')!, packageId: packageValue ? objectId(packageValue, 'DATABOUNTY_PACKAGE_ID') : undefined,
     walrusPublisherUrl: url(env.WALRUS_PUBLISHER_URL, 'WALRUS_PUBLISHER_URL'), walrusAggregatorUrl: url(env.WALRUS_AGGREGATOR_URL, 'WALRUS_AGGREGATOR_URL'), walrusStorageEpochs: positive(env, 'WALRUS_STORAGE_EPOCHS', 5),
     sealKeyServerIds: ids, sealAggregatorUrl: url(env.SEAL_AGGREGATOR_URL, 'SEAL_AGGREGATOR_URL'), sealThreshold: positive(env, 'SEAL_THRESHOLD', 1),

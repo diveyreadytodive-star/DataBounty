@@ -5,7 +5,7 @@ import type { BountyState, BountySummary, ObjectId, ReviewerGrantSummary, SuiAdd
 // cannot safely mutate a caller supplied revision under the fixed ABI.
 export interface ChainBounty extends BountySummary { submissionIds: ObjectId[]; policyRevision: string; }
 export interface ChainSubmission extends SubmissionSummary { reviewerGrants: ReviewerGrantSummary[]; }
-export interface ChainGateway { readBounty(id: ObjectId): Promise<ChainBounty>; readSubmission(id: ObjectId): Promise<ChainSubmission>; health(): Promise<boolean>; }
+export interface ChainGateway { readBounty(id: ObjectId): Promise<ChainBounty>; readSubmission(id: ObjectId): Promise<ChainSubmission>; listBounties(): Promise<ChainBounty[]>; health(): Promise<boolean>; }
 export function reviewerGrantAllows(submission: ChainSubmission, reviewer: SuiAddress, now = Date.now()): boolean {
   return submission.reviewerGrants.some((grant) => grant.reviewer === reviewer && !grant.revoked && BigInt(grant.expiresAtMs) > BigInt(now));
 }

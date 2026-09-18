@@ -1,10 +1,10 @@
 import type {
-  AgentDescriptor, ApiErrorResponse, BountyResponse, BountyState, DuplicateCandidate, HealthResponse, ObjectId,
+  AgentDescriptor, ApiErrorResponse, BountyResponse, BountyState, DuplicateCandidate, HealthResponse, ObjectId, PublicBountyBoardResponse,
   ReviewChecklistItem, ReviewCitation, ReviewRecommendation, ReviewResponse, ReviewStatusResponse, SubmissionState,
   SubmissionSummary, SuiAddress, StoragePublishResponse,
 } from '@draftproof/server/api-types';
 
-export type { AgentDescriptor, ApiErrorResponse, BountyResponse, BountyState, DuplicateCandidate, HealthResponse, ObjectId, ReviewChecklistItem, ReviewCitation, ReviewRecommendation, ReviewResponse, ReviewStatusResponse, SubmissionState, SubmissionSummary, SuiAddress, StoragePublishResponse };
+export type { AgentDescriptor, ApiErrorResponse, BountyResponse, BountyState, DuplicateCandidate, HealthResponse, ObjectId, PublicBountyBoardResponse, ReviewChecklistItem, ReviewCitation, ReviewRecommendation, ReviewResponse, ReviewStatusResponse, SubmissionState, SubmissionSummary, SuiAddress, StoragePublishResponse };
 export type Bounty = BountyResponse['bounty'];
 
 export const MAX_FILE_BYTES = 200 * 1024;

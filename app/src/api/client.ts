@@ -1,4 +1,4 @@
-import type { AgentDescriptor, ApiErrorResponse, BountyResponse, ObjectId, ReviewResponse, ReviewStatusResponse, SuiAddress, StoragePublishResponse } from '../domain';
+import type { AgentDescriptor, ApiErrorResponse, BountyResponse, ObjectId, PublicBountyBoardResponse, ReviewResponse, ReviewStatusResponse, SuiAddress, StoragePublishResponse } from '../domain';
 import { config } from '../config';
 export class ApiError extends Error { constructor(public readonly code: string, message: string, public readonly retryable = false) { super(message); } }
 function url(path: string): string { return `${config.apiBaseUrl}${path}`; }
@@ -9,6 +9,7 @@ export interface AgentsResponse { agents: AgentDescriptor[]; }
 export const api = {
   health: () => request<Health>('/api/health'),
   agents: () => request<AgentsResponse>('/api/agents'),
+  bounties: () => request<PublicBountyBoardResponse>('/api/bounties'),
   challenge: (address: SuiAddress) => request<AuthChallenge>('/api/auth/challenge', { method: 'POST', body: JSON.stringify({ address }) }),
   verify: (challengeId: string, message: string, signature: string) => request<{ address: SuiAddress; network: 'testnet'; expiresAt: string }>('/api/auth/verify', { method: 'POST', body: JSON.stringify({ challengeId, message, signature }) }),
   bounty: (bountyId: ObjectId) => request<BountyResponse>(`/api/bounties/${bountyId}`),

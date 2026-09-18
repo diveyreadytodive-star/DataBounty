@@ -1,0 +1,96 @@
+{
+  "capturedAt": "2026-09-18T16:16:00+09:00",
+  "network": "sui-testnet",
+  "packageId": "0xf7923bd34625af96c40e27187371f231fca6bca7d25d244fe72244ec9a89b0aa",
+  "bountyId": "0x040467c0954dae110f222af8ca37aa3a67b4a6160454e4a42ff38bffc8ba2bd4",
+  "submissionId": "0xa32ff16c3708e47511583b1548af38917a77cbc7c3bef82be7a3024fa9b31af6",
+  "sui": {
+    "reserveTransaction": "HWsY1oy9RZVyAJEsM8YvVWs9oMbF65DHCQiAdFwMkt7T",
+    "finalizeTransaction": "9uf4wZcjRcM9VFmtU778Atu8VR2QK8Z6Aka1pAuEWpWe",
+    "reserveEvent": "SubmissionReserved",
+    "finalizeEvent": "SubmissionFinalized",
+    "storageEndEpoch": "529",
+    "reviewerGrantTransaction": "HcAvLYUU5X1p4RMHeSLSdf2HWYAip1ZE78F1C5tyzrtt",
+    "payoutTransaction": "9aDuBYceNVdKUDLdZNcq54eCB6K6WZCLVZu18TYLYcaR"
+  },
+  "walrus": {
+    "blobId": "EDoj9-ETZbZ10_wlSCTFB3Kl7py-KuDb6Qc1h9byq9c",
+    "aggregatorReadStatus": 200,
+    "ciphertextBytes": 1163,
+    "onchainDigestSha256": "c79e02c871072c54afc5af15127dfd03a0ca63ba54b4ac5a56b3ab81676e7361",
+    "aggregatorReadbackDigestSha256": "c79e02c871072c54afc5af15127dfd03a0ca63ba54b4ac5a56b3ab81676e7361",
+    "digestMatches": true
+  },
+  "seal": {
+    "encryptedObjectParsed": true,
+    "packageId": "0xf7923bd34625af96c40e27187371f231fca6bca7d25d244fe72244ec9a89b0aa",
+    "identityHex": "040467c0954dae110f222af8ca37aa3a67b4a6160454e4a42ff38bffc8ba2bd4a32ff16c3708e47511583b1548af38917a77cbc7c3bef82be7a3024fa9b31af6",
+    "threshold": 1,
+    "keyServerObjectId": "0xb012378c9f3799fb5b1a7083da74a4069e3c3f1c93de0b27212a5799ce1e1e98"
+  },
+  "postPayoutSealDenial": {
+    "attemptedAt": "2026-09-18T17:30:00+09:00",
+    "freshReviewerSession": true,
+    "denied": true,
+    "reason": "User does not have access to one or more of the requested keys"
+  },
+  "notYetProven": [
+    "second full happy-path run or verified backup recording"
+  ],
+  "review": {
+    "provider": "groq",
+    "model": "openai/gpt-oss-20b",
+    "recommendation": "RECOMMEND_ACCEPT",
+    "checklistFields": [
+      "message",
+      "scam_type",
+      "red_flags",
+      "redacted_source_note"
+    ],
+    "citation": {
+      "submissionId": "0xa32ff16c3708e47511583b1548af38917a77cbc7c3bef82be7a3024fa9b31af6",
+      "startByte": 0,
+      "endByte": 747,
+      "exact": true
+    }
+  },
+  "payout": {
+    "bountyState": "PAID",
+    "submissionState": "ACCEPTED",
+    "contributor": "0x3974b995fceb96dbec7247dc1e7a6c53e539c86769733e362f1b40a82cd14af2"
+  },
+  "expiredRefund": {
+    "bountyId": "0x0f0ce45bc348bec4e7a2cd740b79ad6c9987c9cbb90413de0bcf6a58a7b018c4",
+    "transaction": "ANznJg8AmDmSJwrRkZyELZ4XVeM2NzrGXqidSPfpKkMM",
+    "event": "BountyRefunded",
+    "requester": "0x3974b995fceb96dbec7247dc1e7a6c53e539c86769733e362f1b40a82cd14af2",
+    "bountyState": "EXPIRED_REFUNDED",
+    "remainingRewardMist": "0"
+  },
+  "publicPreview": {
+    "url": "https://databounty-wine.vercel.app",
+    "deploymentId": "dpl_71qPR1YchLxByVkJZrkq3qeuACRL",
+    "title": "Lighthouse — DataBounty on Sui Testnet",
+    "verifiedHttpStatus": 200,
+    "mode": "read-only static preview"
+  },
+  "separateWalletRun": {
+    "bountyId": "0x317efc01790d938434c3a484d305cc20b21a011389f2bd13830625ff29bcc255",
+    "bountyCreateTransaction": "C6z2nuBYT74JaNNyZSjvMu3R1pcTnBjYF7MHKpRGcQQ9",
+    "requester": "0x3974b995fceb96dbec7247dc1e7a6c53e539c86769733e362f1b40a82cd14af2",
+    "contributor": "0xeefc56c778f3877def3aa5460295cb4f1fcb89cc76f332882f0b34b7ebde021e",
+    "readySubmissionId": "0x4960ce098e32ef00373ab18c6ac10c455c1d7958d3c472e6b9e894d470bf53f9",
+    "readyReserveTransaction": "B1tjBC2BKq1AabC6UZcE3xANkvU55vw5qrK8FDHAPnY",
+    "readyFinalizeTransaction": "B3PZK3CVxfKmM9HE1FMdemqe6EUmvrBBjraLwtkTmYuv",
+    "readyBlobId": "EqyrmfnB2HDeZjayfJJlzmYU63eLGGAY7fozboG74xI",
+    "acceptedSubmissionId": "0x7c37bd085f4b5f6708f572fb40aa9bb4f5af861818d46f93b0b9fd353876584f",
+    "acceptedReserveTransaction": "FjJQ7zezMviyQq81SpBDLvmLXRzQyYKyjNeKDx3rQgAt",
+    "acceptedFinalizeTransaction": "4y3UgTZBng7dcLPhn5AagvATbyspgyWhvnDZfBh4FDg8",
+    "acceptedBlobId": "MKBivc8MWsm_6SvheOZJ3-i52sfAfLRmsEuWfTxGvPM",
+    "payoutTransaction": "73SZwma8mbsZ4ZK3rozBbva4CugEKEePjcyivxwCBhFj",
+    "storageEndEpoch": "529",
+    "bountyState": "PAID",
+    "acceptedSubmissionState": "ACCEPTED",
+    "readySubmissionState": "READY"
+  }
+}

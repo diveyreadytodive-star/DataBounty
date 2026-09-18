@@ -1,10 +1,10 @@
 # DataBounty 제출 문안
 
-상태: 실제 package 배포와 보상 escrow까지 검증됨. contributor 제출, AI review, payout/refund browser E2E는 진행 중이며 제출 전 새 증거로 갱신해야 함.
+상태: 실제 Sui Testnet escrow → encrypted submission → Walrus readback → Seal reviewer access → Groq review → requester-signed payout과 post-payout fresh Seal denial까지 검증됨. 두 지갑 재현, deadline refund, 최신 static preview 배포는 별도 증거가 필요합니다.
 
 ## 공개 정적 미리보기 고지
 
-공식 공개 미리보기는 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)이며, 정적 읽기 전용 화면이 로드되는 것을 확인했습니다.
+공식 공개 미리보기는 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)입니다. 최신 production deployment `dpl_71qPR1YchLxByVkJZrkq3qeuACRL`는 HTTP `200` 및 `Lighthouse — DataBounty on Sui Testnet` title로 확인했습니다.
 
 공개 화면은 UI·아키텍처·확인된 Testnet package와 escrow 증거를 읽어 보는 정적 미리보기입니다. 지갑 연결·인증, API 호출, 업로드와 실제 contribution submission, AI review, payout, refund, cancel은 비활성화되어 있습니다. Walrus·Seal 처리와 reviewer 권한 변경도 연결하지 않습니다. 이 화면의 공개는 live backend, submission 완료, 또는 end-to-end 동작 증거가 아닙니다.
 
@@ -38,15 +38,19 @@ DataBounty는 공개 과제와 보상 escrow, 암호화된 제출, AI 검토 카
 
 ## 현재 구현 및 네트워크 증거
 
-2026-09-14 KST 기준:
+2026-09-18 KST 기준:
 
 - DataBounty package `0xf7923bd34625af96c40e27187371f231fca6bca7d25d244fe72244ec9a89b0aa`를 Sui Testnet에 배포했습니다.
 - publish transaction은 `Bs8bzmXu7urPZ9ufyimLmBEqt7gLo9fZDa95yUEv9yia`이며, on-chain source verification이 성공했습니다.
 - 요청자가 `0.01` Testnet SUI (`10,000,000 MIST`)를 Bounty `0x0f0ce45bc348bec4e7a2cd740b79ad6c9987c9cbb90413de0bcf6a58a7b018c4`에 예치했습니다.
 - create transaction `9nTbj2uoGH1sLbKhYeWTaNGUNrPEBpFrQXLKrbqrYwok` 이후 Bounty는 `OPEN`으로 확인됐습니다.
-- app 9, server 12, Move 22 테스트와 typecheck, lint, build가 통과했습니다. server 테스트에는 real Ed25519와 default verifier 인증 회귀가 포함됩니다.
+- Live Bounty `0x040467c0954dae110f222af8ca37aa3a67b4a6160454e4a42ff38bffc8ba2bd4`와 Submission `0xa32ff16c3708e47511583b1548af38917a77cbc7c3bef82be7a3024fa9b31af6`에서 reserve, finalize, Walrus readback, reviewer grant, Groq review, requester-signed payout을 완료했습니다.
+- Walrus blob `EDoj9-ETZbZ10_wlSCTFB3Kl7py-KuDb6Qc1h9byq9c`의 1,163-byte ciphertext SHA-256은 on-chain digest와 일치했습니다.
+- Groq `openai/gpt-oss-20b` review는 `RECOMMEND_ACCEPT` 및 exact UTF-8 citation `0–747`을 반환했습니다.
+- payout transaction `9aDuBYceNVdKUDLdZNcq54eCB6K6WZCLVZu18TYLYcaR` 뒤 Bounty는 `PAID`, Submission은 `ACCEPTED`입니다. 새 reviewer Seal session은 key-server access denial로 거절됐습니다.
+- app 17, server 19, Move 22 테스트와 typecheck, lint, build가 통과했습니다.
 
-현재 서버 재시작 뒤 Slush requester personal-message와 같은 브라우저 세션의 Bounty load가 아직 end-to-end로 증명되지 않았습니다. 그 후 contributor submission, Walrus/Seal live proof, AI review exact citation, approval payout, deadline refund, revoke 후 fresh Seal denial을 같은 Testnet 흐름에서 추가 검증해야 합니다. 이 항목들은 아직 완료라고 주장하지 않습니다.
+별도 만료 Bounty refund도 Testnet에서 확인됐습니다: `ANznJg8AmDmSJwrRkZyELZ4XVeM2NzrGXqidSPfpKkMM`의 `BountyRefunded` 이벤트 뒤 해당 Bounty는 `EXPIRED_REFUNDED`, escrow는 `0 MIST`입니다. 남은 것은 서로 다른 requester/contributor 지갑 재현 또는 검증된 백업 기록입니다. 상세한 live identifiers와 제한은 `artifacts/evidence/SUI-WALRUS-SEAL-LIVE-PROOF.md`에 기록합니다.
 
 ## 신뢰와 한계
 
