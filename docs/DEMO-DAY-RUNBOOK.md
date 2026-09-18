@@ -34,7 +34,7 @@ Open the evidence document or Sui explorer links if network is slow.
 ## 0:55–1:35 — Reviewer grant and Groq review
 
 1. Show the grant transaction and its exact reviewer address.
-2. Open Sonar and show `groq / openai/gpt-oss-20b`, `RECOMMEND_ACCEPT`, the checklist, and bytes `0–747` citation.
+2. Open AI review and show `groq / openai/gpt-oss-20b`, `RECOMMEND_ACCEPT`, the checklist, and bytes `0–747` citation.
 
 > The AI has no payout key. It reads only after the requester grants exact, time-limited Seal access. Every citation must exactly match the submitted bytes or the server rejects the model output.
 

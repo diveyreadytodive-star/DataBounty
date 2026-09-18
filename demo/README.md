@@ -26,7 +26,7 @@
 
 1. Requester가 위 Task spec으로 Task를 만들고 Testnet SUI를 escrow한다.
 2. Contributor가 `good-phishing-case.md`를 업로드해 reserve → encrypt → Walrus publish → finalize 한다.
-3. Requester가 Seal reviewer 권한을 부여하고 Sonar review를 실행한다.
+3. Requester가 Seal reviewer 권한을 부여하고 AI review를 실행한다.
 4. AI의 필드 체크와 정확한 인용을 확인한 뒤 requester가 Sui 지갑으로 승인·지급한다.
 5. `bad-missing-fields-case.md`를 업로드해 누락 검증을 보여준다.
 6. 마지막으로 `duplicate-like-phishing-case.md`를 `good-phishing-case.md`와 비교한다.
