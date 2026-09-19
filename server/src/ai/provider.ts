@@ -50,12 +50,21 @@ export class OpenAiCompatibleProvider implements AiProvider {
       const fields = [...input.taskSpec.matchAll(/(?:필수\s*필드|required\s*fields?)\s*:\s*([^\n.]+)/gi)]
         .flatMap((match) => match[1]!.split(',').map((field) => field.trim()).filter(Boolean));
       const checklist = (fields.length > 0 ? fields : ['grounded_submission']).map((field) => ({ field, status: targetText.includes(field) ? 'PRESENT' as const : 'MISSING' as const, citationIds: [0] }));
+      const citations: ReviewCitation[] = [{ submissionId: input.target.submissionId, quote: targetText, startByte: 0, endByte: input.target.content.byteLength }];
+      const duplicateCandidates = input.comparisons.map((comparison) => {
+        const comparisonBytes = comparison.content;
+        const identical = Buffer.from(comparisonBytes).equals(Buffer.from(input.target.content));
+        if (!identical) return { submissionId: comparison.submissionId, verdict: 'NONE' as const, citationIds: [] };
+        const citationId = citations.length;
+        citations.push({ submissionId: comparison.submissionId, quote: text(comparisonBytes), startByte: 0, endByte: comparisonBytes.byteLength });
+        return { submissionId: comparison.submissionId, verdict: 'POSSIBLE' as const, citationIds: [0, citationId] };
+      });
       return {
         model: result.model as string,
         recommendation,
         checklist,
-        duplicateCandidates: input.comparisons.map((comparison) => ({ submissionId: comparison.submissionId, verdict: 'NONE' as const, citationIds: [0] })),
-        citations: [{ submissionId: input.target.submissionId, quote: targetText, startByte: 0, endByte: input.target.content.byteLength }]
+        duplicateCandidates,
+        citations
       };
     }
     if (!Array.isArray(value.checklist) || !Array.isArray(value.duplicateCandidates) || !Array.isArray(value.citations)) throw modelRejected('AI provider review did not satisfy the response schema');

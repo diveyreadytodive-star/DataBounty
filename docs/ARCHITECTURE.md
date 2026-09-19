@@ -96,11 +96,11 @@ SubmissionBundleV1 {
 
 `content_commitment = SHA-256("databounty-content-v1" UTF-8 || salt || content)`. The submission ID is created by `reserve_submission`, so it cannot be part of the pre-reservation commitment. Exact binding therefore requires all four checks: live `submission.bounty_id`, Seal ciphertext header identity, decoded bundle IDs, and the commitment. Plaintext, salt, filename, session/key material, and AI review body are absent from chain state, SQLite, ordinary logs, Git, and screenshots.
 
-`seal_approve(identity, bounty, submission, clock, ctx)` has no side effects. It requires exact 64-byte identity, exact parent binding, and READY/ACCEPTED state. It permits the requester, the contributor of that Submission, and a current exact reviewer grant. Reviewer grants never transfer to another Submission/Bounty and revoke on rejection or approval. Revocation blocks fresh key requests only; it cannot recall already released plaintext or keys.
+`seal_approve(identity, bounty, submission, clock, ctx)` has no side effects. It requires exact 64-byte identity, exact parent binding, a Bounty that was not refunded, and READY/ACCEPTED state. It permits the requester, the contributor of that Submission, and a current exact reviewer grant. Reviewer grants never transfer to another Submission/Bounty and revoke on rejection or approval. Revocation blocks fresh key requests only; it cannot recall already released plaintext or keys. This refunded-Bounty access guard is source-tested and requires a Testnet package upgrade before it changes the already deployed package.
 
 ## AI review boundary
 
-The requester grants the configured reviewer delegate access to the target READY Submission and optional ACCEPTED comparison Submissions belonging to Bounties with the same requester. The server then performs: live Bounty/Submission ownership and state reads → exact grant check → Walrus readback/digest → Seal header identity → fresh delegate decrypt → bundle ID/UTF-8/commitment checks → model call → exact citation validation → live access recheck before return.
+The requester grants the configured reviewer delegate access to the target READY Submission and optional ACCEPTED comparison Submissions belonging to Bounties with the same requester. The server then performs: live Bounty/Submission ownership and state reads → exact grant check → Walrus readback/digest → Seal header identity → fresh delegate decrypt → bundle ID/UTF-8/commitment checks → model recommendation → exact source-byte validation → live access recheck before return.
 
 The response is ephemeral JSON:
 
@@ -113,7 +113,7 @@ The response is ephemeral JSON:
 }
 ```
 
-Every citation must refer to a supplied Submission and equal the exact UTF-8 byte slice. Invalid/ambiguous citations, unknown fields, ungranted inputs, or model JSON outside the schema fail closed. The database stores metadata only: request ID, requester, selected IDs, status/timestamps, provider/model ID, and response hash. It stores no plaintext, prompt, review body, or recoverable result. A duplicate completed review returns `RESULT_NOT_REPLAYABLE` rather than returning a stored body.
+Every citation must refer to a supplied Submission and equal the exact UTF-8 byte slice. The Groq path returns the model recommendation, then derives the checklist from required field-name presence and compares optional submissions for byte-identical content only. It does not claim semantic similarity or factual truth. Invalid/ambiguous citations, unknown fields, ungranted inputs, or model JSON outside the schema fail closed. The database stores metadata only: request ID, requester, selected IDs, status/timestamps, provider/model ID, and response hash. It stores no plaintext, prompt, review body, or recoverable result. A duplicate completed review returns `RESULT_NOT_REPLAYABLE` rather than returning a stored body.
 
 ## Migration and Luna file map
 

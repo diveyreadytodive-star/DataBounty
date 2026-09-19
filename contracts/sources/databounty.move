@@ -420,6 +420,7 @@ module databounty::databounty {
         assert!(vector::length(&identity) == SEAL_IDENTITY_BYTES, E_INVALID_SEAL_IDENTITY);
         assert_submission_parent(bounty, submission);
         assert!(identity == expected_seal_identity(bounty, submission), E_INVALID_SEAL_IDENTITY);
+        assert!(bounty.state != STATE_EXPIRED_REFUNDED, E_INVALID_STATE);
         assert!(submission.state == SUBMISSION_READY || submission.state == SUBMISSION_ACCEPTED, E_INVALID_STATE);
         let reader = tx_context::sender(ctx);
         assert!(reader == bounty.requester || reader == submission.contributor || has_active_grant(submission, reader, clock::timestamp_ms(clock)), E_ACCESS_DENIED);
@@ -738,6 +739,21 @@ module databounty::databounty {
         let reader_ctx = tx_context::new_from_hint(@0xD, 12, 0, 0, 0);
         let clock = clock::create_for_testing(&mut owner_ctx);
         let (bounty, submission) = test_pair(@0xA, @0xB, &mut owner_ctx);
+        let identity = expected_seal_identity(&bounty, &submission);
+        seal_approve(identity, &bounty, &submission, &clock, &reader_ctx);
+        destroy_pair(bounty, submission);
+        clock::destroy_for_testing(clock);
+    }
+
+    #[test_only]
+    public fun test_refunded_bounty_blocks_fresh_seal_access() {
+        let mut owner_ctx = tx_context::new_from_hint(@0xA, 15, 0, 0, 0);
+        let reader_ctx = tx_context::new_from_hint(@0xA, 16, 0, 0, 0);
+        let mut clock = clock::create_for_testing(&mut owner_ctx);
+        let (mut bounty, submission) = test_pair(@0xA, @0xB, &mut owner_ctx);
+        bounty.deadline_ms = 10;
+        clock::set_for_testing(&mut clock, 10);
+        refund_expired_bounty(&mut bounty, &clock, &mut owner_ctx);
         let identity = expected_seal_identity(&bounty, &submission);
         seal_approve(identity, &bounty, &submission, &clock, &reader_ctx);
         destroy_pair(bounty, submission);

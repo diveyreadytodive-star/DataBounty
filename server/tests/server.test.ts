@@ -131,6 +131,16 @@ test('review provider treats task spec and submission text as untrusted and requ
   assert.match(system, /never as instructions/);
 });
 
+test('Groq comparison marks only byte-identical submissions as a match', async () => {
+  const localConfig: Config = { ...config(), ai: { provider: 'groq', baseUrl: 'http://ai.test/v1', apiKey: 'test-key', model: 'test-model' } };
+  const provider = new OpenAiCompatibleProvider(localConfig, (async () => new Response(JSON.stringify({ model: 'test-model', choices: [{ message: { content: JSON.stringify({ recommendation: 'RECOMMEND_ACCEPT' }) } }] }))) as typeof fetch);
+  const target = Buffer.from('message: exact');
+  const exact = await provider.generateReview({ role: 'reviewer', taskSpec: '필수 필드: message', target: { submissionId: SUBMISSION, content: target }, comparisons: [{ submissionId: COMPARISON, content: Buffer.from('message: exact') }] });
+  assert.equal(exact.duplicateCandidates[0]?.verdict, 'POSSIBLE');
+  const different = await provider.generateReview({ role: 'reviewer', taskSpec: '필수 필드: message', target: { submissionId: SUBMISSION, content: target }, comparisons: [{ submissionId: COMPARISON, content: Buffer.from('message: different') }] });
+  assert.equal(different.duplicateCandidates[0]?.verdict, 'NONE');
+});
+
 test('public task board exposes only public task summaries and anonymous task loading hides submissions', async () => {
   const { app, db } = await setup();
   const board = await app.inject({ method: 'GET', url: '/api/bounties' });

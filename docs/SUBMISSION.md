@@ -1,12 +1,10 @@
 # DataBounty 제출 문안
 
-상태: 실제 Sui Testnet escrow → encrypted submission → Walrus readback → Seal reviewer access → Groq review → requester-signed payout과 post-payout fresh Seal denial까지 검증됨. 두 지갑 재현, deadline refund, 최신 static preview 배포는 별도 증거가 필요합니다.
+상태: 실제 Sui Testnet escrow → encrypted submission → Walrus readback → Seal reviewer access → Groq recommendation → requester-signed payout → post-payout fresh Seal denial과 별도 requester/contributor 지급·expiry refund까지 증거가 기록됨.
 
-## 공개 정적 미리보기 고지
+## 운영 Testnet 앱
 
-공식 공개 미리보기는 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)입니다. 최신 production deployment `dpl_71qPR1YchLxByVkJZrkq3qeuACRL`는 HTTP `200` 및 `Lighthouse — DataBounty on Sui Testnet` title로 확인했습니다.
-
-공개 화면은 UI·아키텍처·확인된 Testnet package와 escrow 증거를 읽어 보는 정적 미리보기입니다. 지갑 연결·인증, API 호출, 업로드와 실제 contribution submission, AI review, payout, refund, cancel은 비활성화되어 있습니다. Walrus·Seal 처리와 reviewer 권한 변경도 연결하지 않습니다. 이 화면의 공개는 live backend, submission 완료, 또는 end-to-end 동작 증거가 아닙니다.
+공식 앱은 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)입니다. 지갑 연결, 바운티 생성, 암호화 제출, reviewer grant, AI recommendation, 요청자 서명 지급을 제공합니다. 실제 동작 증거는 앱 화면이 아니라 transaction·object·Walrus blob 식별자가 담긴 `artifacts/evidence/SUI-WALRUS-SEAL-LIVE-PROOF.md`를 기준으로 합니다.
 
 ## 이름과 한 줄 소개
 
@@ -16,7 +14,7 @@
 
 ## 문제
 
-소규모 AI·연구 팀은 특정 형식의 희소 사례가 필요하지만, 하나씩 받은 자료의 형식·중복·근거를 검토한 뒤에야 보상할 수 있습니다. 일반 업로드 방식에서는 누가 무엇을 언제 제출했는지와 어떤 자료를 승인했는지가 흐려지고, 원문을 넓게 공유해야 할 수 있습니다.
+요청자는 필요한 정보의 조건을 공개하지만, 기여자는 보상 전 원문을 넓게 공유하기 어렵고 요청자는 지급 전 자료를 확인하기 어렵습니다. Lighthouse는 공개 과제, 암호화된 제출, 제한된 검토 권한, 요청자 승인 지급을 연결합니다.
 
 ## 해결
 
@@ -24,7 +22,7 @@ DataBounty는 공개 과제와 보상 escrow, 암호화된 제출, AI 검토 카
 
 1. 요청자가 과제 스키마·마감·보상을 설정하고 Sui Testnet Bounty에 SUI를 예치합니다.
 2. 기여자가 사례를 브라우저에서 Seal로 암호화해 Walrus에 올리고, readback을 거쳐 exact Submission을 `READY`로 만듭니다.
-3. 요청자가 특정 Submission에 reviewer 권한을 부여하면 AI가 과제 기준, 누락 항목, 명백한 텍스트 중복 후보와 원문 인용을 구조화합니다.
+3. 요청자가 특정 Submission에 reviewer 권한을 부여하면 AI가 승인·거절 권고를 반환합니다. 시스템은 필수 필드명 포함 여부, 원문 바이트 무결성, 비교 대상으로 제공한 사례와의 바이트 완전 일치 여부를 표시합니다.
 4. 요청자가 검토를 보고 승인하면 Sui Move가 정확한 contributor에게 escrow 전액을 한 번 지급합니다.
 5. 미승인 Bounty는 deadline 뒤 요청자가 환불할 수 있습니다.
 
@@ -34,7 +32,7 @@ DataBounty는 공개 과제와 보상 escrow, 암호화된 제출, AI 검토 카
 
 - **Sui Move:** `Bounty` reward escrow, requester-only approval, exact Submission binding, one-time payout, Clock 기반 refund를 상태 전이로 강제합니다.
 - **Walrus + Seal:** Walrus에는 암호문만 두고, Seal은 `BCS(bounty_id, submission_id)`와 현재 온체인 권한을 확인해 요청자·허용 reviewer에게만 새 복호화 key를 제공합니다.
-- **AI:** 사람이 읽어야 할 검토 근거를 줄입니다. recommendation, field checklist, duplicate candidate, exact UTF-8 citation을 만들지만 송금·웹 도구·지갑·임의 파일을 호출하지 않습니다.
+- **AI:** 승인·거절 권고를 반환합니다. 시스템은 필수 필드명 포함 여부와 원문 바이트 무결성을 표시하며, 비교 대상으로 제공한 사례와 바이트 완전 일치 여부만 계산합니다. AI는 송금·웹 도구·지갑·임의 파일을 호출하지 않습니다.
 
 ## 현재 구현 및 네트워크 증거
 
@@ -48,9 +46,9 @@ DataBounty는 공개 과제와 보상 escrow, 암호화된 제출, AI 검토 카
 - Walrus blob `EDoj9-ETZbZ10_wlSCTFB3Kl7py-KuDb6Qc1h9byq9c`의 1,163-byte ciphertext SHA-256은 on-chain digest와 일치했습니다.
 - Groq `openai/gpt-oss-20b` review는 `RECOMMEND_ACCEPT` 및 exact UTF-8 citation `0–747`을 반환했습니다.
 - payout transaction `9aDuBYceNVdKUDLdZNcq54eCB6K6WZCLVZu18TYLYcaR` 뒤 Bounty는 `PAID`, Submission은 `ACCEPTED`입니다. 새 reviewer Seal session은 key-server access denial로 거절됐습니다.
-- app 17, server 19, Move 22 테스트와 typecheck, lint, build가 통과했습니다.
+- app 17, server 21, Move 23 테스트와 typecheck, lint, build가 통과했습니다.
 
-별도 만료 Bounty refund도 Testnet에서 확인됐습니다: `ANznJg8AmDmSJwrRkZyELZ4XVeM2NzrGXqidSPfpKkMM`의 `BountyRefunded` 이벤트 뒤 해당 Bounty는 `EXPIRED_REFUNDED`, escrow는 `0 MIST`입니다. 남은 것은 서로 다른 requester/contributor 지갑 재현 또는 검증된 백업 기록입니다. 상세한 live identifiers와 제한은 `artifacts/evidence/SUI-WALRUS-SEAL-LIVE-PROOF.md`에 기록합니다.
+별도 만료 Bounty refund도 Testnet에서 확인됐습니다: `ANznJg8AmDmSJwrRkZyELZ4XVeM2NzrGXqidSPfpKkMM`의 `BountyRefunded` 이벤트 뒤 해당 Bounty는 `EXPIRED_REFUNDED`, escrow는 `0 MIST`입니다. Finalist Lock·Claim Window·분쟁 절차는 아직 구현되지 않은 로드맵입니다. 상세한 live identifiers와 제한은 `artifacts/evidence/SUI-WALRUS-SEAL-LIVE-PROOF.md`에 기록합니다.
 
 ## 신뢰와 한계
 

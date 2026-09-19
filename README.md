@@ -1,6 +1,6 @@
 # Lighthouse by DataBounty
 
-**Lighthouse는 희소한 AI 학습 사례를 바운티 방식으로 모집하는 정보 자산 플랫폼입니다. 요청자는 Testnet SUI를 에스크로에 예치하고, 기여자는 암호화된 사례를 제출하며, AI Review가 근거를 정리한 뒤 요청자가 최종 지급을 승인합니다.**
+**Lighthouse는 조건을 공개한 뒤 암호화된 텍스트 사례를 바운티 방식으로 모집하는 Testnet MVP입니다. 요청자는 SUI를 에스크로에 예치하고, 기여자는 사례를 제출하며, AI Review가 승인·거절 권고를 반환한 뒤 요청자가 최종 지급을 승인합니다.**
 
 **Live app:** [databounty-wine.vercel.app](https://databounty-wine.vercel.app)
 **Network:** Sui Testnet
@@ -8,11 +8,11 @@
 
 ## Why Lighthouse
 
-AI·리서치 팀은 특정 형식의 희소 사례가 필요하지만, 단순 업로드 보상은 형식 미달·중복·근거 없는 자료에 비용을 쓰게 만듭니다. Lighthouse는 자료를 공개 원문으로 받지 않고, 검증 가능한 암호화 제출본에만 보상을 연결합니다.
+요청자는 필요한 정보의 조건을 먼저 공개하지만, 기여자는 보상 전 원문을 넓게 공개하기 어렵고 요청자는 지급 전 자료를 확인하기 어렵습니다. Lighthouse는 공개 과제, 암호화된 제출, 제한된 검토 권한, 요청자 승인 지급을 하나의 흐름으로 연결합니다.
 
 1. **Requester**가 과제, 마감, Testnet SUI 보상을 생성합니다.
 2. **Contributor**가 사례를 Seal로 암호화하고 Walrus에 저장합니다.
-3. **AI Review**가 권한을 얻은 exact submission에서 필수 항목, 중복 후보, exact UTF-8 citation을 구조화합니다.
+3. **AI Review**가 권한을 얻은 exact submission에 대해 승인·거절 권고를 반환합니다. 시스템은 필수 필드명의 포함 여부와 원문 바이트 무결성을 확인하고, 비교 대상으로 제공한 사례와 바이트 완전 일치 여부를 표시합니다.
 4. **Requester**만 AI 근거를 본 뒤 payout transaction을 서명할 수 있습니다.
 
 AI는 지급 권한이 없습니다. Sui Move가 승인된 정확한 submission의 contributor에게 escrow를 한 번만 보냅니다.
@@ -65,9 +65,9 @@ flowchart LR
 
 ### AI Review
 
-The configured server-only provider is Groq `openai/gpt-oss-20b`. It does not train on or control the escrow.
+The configured server-only provider is Groq `openai/gpt-oss-20b`. It returns an approval, rejection, or human-review recommendation. It does not train on or control the escrow.
 
-The review path checks live Sui state, reviewer grant, Walrus digest, Seal header, decrypted commitment, required fields, duplicate candidates, and exact UTF-8 byte citations. A citation that does not equal the selected source bytes is rejected.
+The review path checks live Sui state, reviewer grant, Walrus digest, Seal header, decrypted commitment, required field-name presence, and exact UTF-8 source-byte integrity. Optional comparison submissions are checked for byte-identical content only; semantic similarity and real-world truth are outside the current MVP.
 
 ## Security boundaries
 
@@ -171,6 +171,6 @@ Lighthouse is a Testnet demonstration. It does not guarantee data truth, copyrig
 
 ## Roadmap
 
-- **P1 — 거래 보호:** 요청자가 원문 열람을 선택한 뒤 장기간 미지급하는 상황을 막기 위한 Finalist Lock과 Claim Window
+- **P1 — 거래 보호:** 요청자가 원문 열람을 선택한 뒤 장기간 미지급하는 상황을 막기 위한 Finalist Lock, Claim Window, 분쟁 절차
 - **P1 — 자산별 제출 규칙:** 정보 자산 유형별 템플릿, 권리 보유 확인, 개인정보·금지 자료 사전 점검
 - **P2 — AI 리뷰 고도화:** 승인·거절·분쟁 결과가 쌓인 뒤 자산 유형별 중복 탐지와 품질 검토 개선

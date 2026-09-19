@@ -10,7 +10,7 @@
 - 로컬 재현 시에도 `AI_PROVIDER`, `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL`을 서버 환경에만 설정합니다. 키를 `VITE_*`나 화면에 노출하지 않습니다.
 - 다른 터미널에서 `npm run build && npm start`를 실행하고 `http://127.0.0.1:3000`을 엽니다.
 - 요청자 A와 기여자 B를 서로 다른 Sui Testnet 지갑으로 준비하고, 현장 시연용 새 Bounty를 생성합니다. 과거 refund Bounty나 지급 완료 Bounty를 재사용하지 않습니다.
-- 서버를 현재 build로 재시작한 뒤 Slush personal-message와 Bounty load를 같은 브라우저 세션에서 끝까지 리허설합니다. 서명된 브라우저 세션은 serverless 재시작 뒤에도 검증되도록 구성했습니다.
+- 서버를 현재 build로 재시작한 뒤 Slush personal-message와 Bounty load를 같은 브라우저 세션에서 끝까지 리허설합니다. serverless 환경의 challenge 발급·검증은 영속 저장소 전환 전까지 재시도 가능성을 포함한 Demo Day 운영 위험입니다.
 - Slush popup의 서명은 사용자가 직접 확인합니다. personal-message는 로그인용이며 자금을 이동하지 않습니다. transaction은 action·recipient·amount을 먼저 확인합니다.
 - private key, API key, cookie, signature, plaintext 파일 전체, 개인 정보, 지갑 잔액을 촬영하지 않습니다.
 
@@ -18,7 +18,7 @@
 
 화면: DataBounty 첫 화면, Sui Testnet network, package readiness.
 
-> AI 팀은 필요한 사례를 모으지만, 중복되거나 형식이 맞지 않는 자료에 보상을 쓰기 쉽습니다. DataBounty는 사례를 암호화해 받고, AI가 근거를 정리하며, 사람이 승인한 정확한 제출본에만 Testnet SUI를 지급합니다.
+> 요청자는 필요한 정보의 조건을 공개하지만, 기여자는 보상 전 원문을 넓게 공개하기 어렵고 요청자는 지급 전 자료를 확인하기 어렵습니다. Lighthouse는 암호화된 제출, 제한된 검토 권한, 요청자 승인 지급을 연결합니다.
 
 강조할 경계: AI는 송금하지 않으며, 검토 결과는 권고입니다.
 
@@ -56,7 +56,7 @@
 2. AI review를 실행합니다.
 3. `recommendation`, required-field checklist, duplicate candidate, 정확한 UTF-8 byte citations를 표시합니다.
 
-> 서버는 task spec과 이 정확한 READY 제출본의 Sui binding·Seal access·commitment를 확인한 뒤에만 Groq AI Review를 요청합니다. AI는 제출의 진실성이나 저작권을 판정하지 않고, 누락 필드·비교 대상으로 제공된 승인 사례의 중복 후보·인용 근거만 정리합니다.
+> 서버는 task spec과 이 정확한 READY 제출본의 Sui binding·Seal access·commitment를 확인한 뒤에만 Groq AI Review를 요청합니다. AI는 승인·거절 권고를 반환합니다. 시스템은 필수 필드명 포함 여부와 원문 바이트 무결성을 확인하고, 비교 대상으로 제공한 사례와 바이트 완전 일치 여부만 표시합니다.
 
 ## 1:50–2:20 — 요청자의 승인과 단 한 번의 지급
 

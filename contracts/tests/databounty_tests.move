@@ -81,6 +81,12 @@ fun d04_unauthorized_seal_request_aborts() {
 
 #[test]
 #[expected_failure]
+fun d11_refund_blocks_fresh_seal_access() {
+    databounty::test_refunded_bounty_blocks_fresh_seal_access();
+}
+
+#[test]
+#[expected_failure]
 fun d12_unauthorized_grant_does_not_increment_policy_revision() {
     databounty::test_unauthorized_grant_aborts_without_revision_change();
 }
