@@ -127,4 +127,35 @@ function SubmissionForm({ prepared, onFile, onReserve, onFinalize, onDiscard, re
 function SubmissionDetail({ submission, isRequester, reviewer, reviewExpiry, setReviewExpiry, onGrant, onRevoke, onOpen, onResume, onOpenReview, reviewReady, busy }: { submission: SubmissionSummary; isRequester: boolean; reviewer: string | null; reviewExpiry: string; setReviewExpiry(value: string): void; onGrant(): void; onRevoke(): void; onOpen(): void; onResume(): void; onOpenReview(): void; reviewReady: boolean; busy: boolean }) {
   return <section className="detail"><div className="detail-title"><div><p className="eyebrow">SELECTED SUBMISSION</p><h3>{statusText(submission.state)}</h3></div><code title={submission.id}>{submission.id}</code></div><dl><div><dt>Contributor</dt><dd>{submission.contributor}</dd></div><div><dt>Commitment</dt><dd>{submission.contentCommitment}</dd></div><div><dt>Walrus blob</dt><dd>{submission.blobId ?? 'Not finalized'}</dd></div><div><dt>Storage end epoch</dt><dd>{submission.storageEndEpoch ?? '—'}</dd></div></dl>{submission.state === 'RESERVED' && <div className="action-row"><button onClick={onResume} disabled={busy}>Resume encrypted upload</button></div>}{(submission.state === 'READY' || submission.state === 'ACCEPTED') && <div className="grant-box"><button className="primary" onClick={onOpen} disabled={busy}>Request fresh key &amp; open</button>{isRequester && <><h4>Reviewer access</h4><label>Configured reviewer wallet<input value={reviewer ?? ''} readOnly placeholder="Configure REVIEWER_DELEGATE_ADDRESS" /></label><label>Expires at (KST)<input type="datetime-local" value={reviewExpiry} onChange={(event) => setReviewExpiry(event.target.value)} /></label><div className="action-row"><button onClick={onGrant} disabled={busy || !reviewer}>Grant exact read</button><button onClick={onRevoke} disabled={busy || !reviewer}>Revoke read</button></div>{submission.state === 'READY' && <><button className="primary full" onClick={onOpenReview} disabled={busy || !reviewReady}>Continue to AI review</button>{!reviewReady && <p className="hint">Grant exact read first. AI Review remains locked until the Sui grant is confirmed.</p>}</>}</>}</div>}</section>;
 }
-function ReviewCard({ result }: { result: ReviewResponse }) { return <article className="ai-result"><div className="result-heading"><span className="pill success">{result.recommendation}</span><small>{result.provider} · {result.model}</small></div><h4>Checklist</h4><ul>{result.checklist.map((item) => <li key={item.field}><strong>{item.field}</strong> · {item.status} · citations {item.citationIds.join(', ') || 'none'}</li>)}</ul><h4>Duplicate candidates</h4>{result.duplicateCandidates.length === 0 ? <p className="hint">No comparison candidates supplied.</p> : <ul>{result.duplicateCandidates.map((candidate) => <li key={candidate.submissionId}><code>{short(candidate.submissionId)}</code> · <strong>{candidate.verdict}</strong> · citations {candidate.citationIds.join(', ') || 'none'}</li>)}</ul>}<h4>Exact citations</h4><ul>{result.citations.map((citation, index) => <li key={`${citation.submissionId}-${citation.startByte}`}><code>#{index}</code> “{citation.quote}” <small>UTF-8 bytes {citation.startByte}–{citation.endByte}</small></li>)}</ul><p className="hint">Recommendation is ephemeral evidence. The requester must inspect it and sign the approval transaction.</p></article>; }
+function ReviewCard({ result }: { result: ReviewResponse }) {
+  const decision = {
+    RECOMMEND_ACCEPT: { label: '승인 권고', description: '요청자가 지정한 필수 항목이 제출 원문에서 확인되었습니다.', tone: 'accept' },
+    RECOMMEND_REJECT: { label: '거절 권고', description: '요청자가 지정한 기준을 충족하지 못한 항목이 있습니다.', tone: 'reject' },
+    NEEDS_HUMAN_REVIEW: { label: '사람 검토 필요', description: 'AI만으로는 요청자의 기준 충족 여부를 확정할 수 없습니다.', tone: 'review' },
+  }[result.recommendation];
+  const checks = [...result.checklist].sort((left, right) => left.field.localeCompare(right.field));
+  const status = { PRESENT: '확인됨', MISSING: '누락', UNCLEAR: '판단 보류' } as const;
+  const cited = (ids: number[]) => ids.length ? ids.map((id) => `근거 #${id + 1}`).join(', ') : '연결된 근거 없음';
+  const presentCount = checks.filter((item) => item.status === 'PRESENT').length;
+
+  return <article className="ai-result" aria-label="AI review report">
+    <header className="review-report-header">
+      <div><p className="eyebrow">AI REVIEW REPORT</p><h3>{decision.label}</h3></div>
+      <span className={`review-decision ${decision.tone}`}>{result.recommendation.replace('RECOMMEND_', '').replaceAll('_', ' ')}</span>
+    </header>
+    <section className="review-summary">
+      <strong>판정 요약</strong>
+      <p>{decision.description} 필수 항목 {presentCount}/{checks.length}개가 확인되었습니다.</p>
+    </section>
+    <section className="review-section">
+      <div className="review-section-heading"><h4>1. 필수 항목 검증</h4><span>{checks.length}개 항목</span></div>
+      <div className="review-check-list">{checks.map((item) => <article className={`review-check ${item.status.toLowerCase()}`} key={item.field}><div><strong>{item.field}</strong><small>{cited(item.citationIds)}</small></div><span>{status[item.status]}</span></article>)}</div>
+    </section>
+    <section className="review-section">
+      <div className="review-section-heading"><h4>2. 중복 검사</h4><span>{result.duplicateCandidates.length ? `${result.duplicateCandidates.length}개 비교` : '비교 자료 없음'}</span></div>
+      {result.duplicateCandidates.length === 0 ? <p className="review-empty">비교 대상으로 지정된 기존 승인 사례가 없습니다.</p> : <div className="review-check-list">{result.duplicateCandidates.map((candidate) => <article className={`review-check ${candidate.verdict === 'POSSIBLE' ? 'unclear' : 'present'}`} key={candidate.submissionId}><div><strong>{short(candidate.submissionId)}</strong><small>{cited(candidate.citationIds)}</small></div><span>{candidate.verdict === 'POSSIBLE' ? '유사 가능성' : '중복 없음'}</span></article>)}</div>}
+    </section>
+    <details className="review-evidence"><summary>3. 원문 근거 {result.citations.length}개 보기</summary><div>{result.citations.map((citation, index) => <article key={`${citation.submissionId}-${citation.startByte}`}><header><strong>근거 #{index + 1}</strong><small>UTF-8 bytes {citation.startByte}–{citation.endByte}</small></header><blockquote>{citation.quote}</blockquote></article>)}</div></details>
+    <footer className="review-provenance"><span>{result.provider} · {result.model}</span><span>AI 권고는 지급이 아닙니다. 원문 근거를 확인한 뒤 요청자가 최종 승인합니다.</span></footer>
+  </article>;
+}
