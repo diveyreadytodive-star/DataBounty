@@ -1,138 +1,168 @@
-# DataBounty
+# Lighthouse by DataBounty
 
-**암호화된 데이터 기여를 사람이 승인한 뒤 정확한 제출본에만 Testnet SUI를 지급하는 검수 서비스.**
+**희소 데이터를 암호화해 받고, AI Review가 근거를 구조화한 뒤, requester만 정확한 contributor에게 Sui Testnet 보상을 지급하는 검증 가능한 데이터 기여 플랫폼입니다.**
 
-요청자가 공개 과제와 보상을 올리면 기여자는 사례를 브라우저에서 암호화해 제출합니다. AI는 과제 기준, 누락 항목, 명백한 텍스트 중복 후보와 원문 인용을 검토 카드로 만들고, 요청자가 최종 판단합니다. AI는 자금을 움직이지 않습니다.
+**Live app:** [databounty-wine.vercel.app](https://databounty-wine.vercel.app)
+**Network:** Sui Testnet
+**Package:** [0xf7923bd34625af96c40e27187371f231fca6bca7d25d244fe72244ec9a89b0aa](https://suiscan.xyz/testnet/object/0xf7923bd34625af96c40e27187371f231fca6bca7d25d244fe72244ec9a89b0aa)
 
-## 현재 검증 상태
+## Why Lighthouse
 
-기준일: 2026-09-14 KST. 이 표는 DataBounty의 현재 네트워크 증거만 다룹니다.
+AI·리서치 팀은 특정 형식의 희소 사례가 필요하지만, 단순 업로드 보상은 형식 미달·중복·근거 없는 자료에 비용을 쓰게 만듭니다. Lighthouse는 자료를 공개 원문으로 받지 않고, 검증 가능한 암호화 제출본에만 보상을 연결합니다.
 
-| 항목 | 상태 | 증거 |
+1. **Requester**가 과제, 마감, Testnet SUI 보상을 생성합니다.
+2. **Contributor**가 사례를 Seal로 암호화하고 Walrus에 저장합니다.
+3. **AI Review**가 권한을 얻은 exact submission에서 필수 항목, 중복 후보, exact UTF-8 citation을 구조화합니다.
+4. **Requester**만 AI 근거를 본 뒤 payout transaction을 서명할 수 있습니다.
+
+AI는 지급 권한이 없습니다. Sui Move가 승인된 정확한 submission의 contributor에게 escrow를 한 번만 보냅니다.
+
+## Live verification
+
+| Proof | Result |
+| --- | --- |
+| Sui package | Testnet deployment and source verification complete |
+| Encrypted submission | Sui reserve → Seal encryption → Walrus publish/readback → Sui finalize complete |
+| Walrus readback | Ciphertext SHA-256 matched the digest finalized on Sui |
+| Seal access | Exact reviewer grant enabled a fresh decrypt; a new decrypt after payout was denied |
+| AI Review | Groq `openai/gpt-oss-20b` returned `RECOMMEND_ACCEPT` with validated exact UTF-8 citation |
+| Requester payout | `PAID` Bounty and `ACCEPTED` submission verified on Sui Testnet |
+| Expiry refund | Separate Bounty reached `EXPIRED_REFUNDED` with zero remaining escrow |
+| Separate-wallet settlement | Requester `0x3974…4af2` paid contributor `0xeefc…021e` on Testnet |
+
+Detailed identifiers and limits are in [the live evidence packet](artifacts/evidence/SUI-WALRUS-SEAL-LIVE-PROOF.md).
+
+## Architecture
+
+```mermaid
+flowchart LR
+  R[Requester wallet] -->|create + fund| S[Sui Bounty escrow]
+  C[Contributor wallet] -->|reserve submission| S
+  C -->|Seal encrypt| W[Walrus ciphertext blob]
+  W -->|SHA-256 readback| S
+  R -->|grant exact read| P[Seal policy]
+  P -->|fresh authorized session| A[AI Review]
+  A -->|recommendation + checklist + citations| R
+  R -->|approve_submission_and_pay| C
+```
+
+### Sui
+
+- Shared `Bounty` and exact `Submission` objects
+- Requester-only reviewer grant, rejection, approval, cancellation, and refund
+- Exact contributor binding and one-time escrow payout
+- `Clock`-based deadline refund and terminal `PAID` / `EXPIRED_REFUNDED` states
+
+### Walrus + Seal
+
+- Walrus stores **ciphertext only**, never the plaintext contribution
+- Publisher upload is followed by aggregator readback and SHA-256 verification
+- Seal binds ciphertext to `BCS(bountyId, submissionId)`
+- Requester, exact contributor, and time-limited requester-approved reviewer may request a fresh key
+- Approval or rejection revokes reviewer access for future sessions
+
+### AI Review
+
+The configured server-only provider is Groq `openai/gpt-oss-20b`. It does not train on or control the escrow.
+
+The review path checks live Sui state, reviewer grant, Walrus digest, Seal header, decrypted commitment, required fields, duplicate candidates, and exact UTF-8 byte citations. A citation that does not equal the selected source bytes is rejected.
+
+## Security boundaries
+
+| Property | What Lighthouse guarantees | Important limit |
 | --- | --- | --- |
-| Move package 배포 | 완료 | Testnet package `0xf7923bd34625af96c40e27187371f231fca6bca7d25d244fe72244ec9a89b0aa` |
-| 배포 거래·source verification | 완료 | `Bs8bzmXu7urPZ9ufyimLmBEqt7gLo9fZDa95yUEv9yia` · verify-source 성공 |
-| 보상 escrow 생성 | 완료 | Bounty `0x0f0ce45bc348bec4e7a2cd740b79ad6c9987c9cbb90413de0bcf6a58a7b018c4` |
-| Bounty 생성 거래 | 완료 | `9nTbj2uoGH1sLbKhYeWTaNGUNrPEBpFrQXLKrbqrYwok` |
-| Bounty 상태·보상 | 완료 | `OPEN` · `10,000,000 MIST` (`0.01` Testnet SUI) |
-| 자동 검증 | 완료 | app 9, server 12, Move 22 테스트 및 typecheck/lint/build 통과 |
-| 요청자 브라우저 인증 | 미검증 | 서버 재시작 뒤 Slush personal-message와 Bounty load를 같은 브라우저에서 끝까지 확인할 E2E 증거 필요 |
-| 기여자 암호화 제출·AI 검토·지급·환불 | 미완료 | 실제 서명과 새 네트워크 증거 필요 |
+| Confidentiality | Plaintext is not stored on Sui or Walrus; Walrus blobs are Seal ciphertext | A legitimate recipient can retain plaintext after decrypting it |
+| Integrity | Content commitment, ciphertext digest, Walrus readback, and Seal identity binding are checked | This does not prove that the real-world claim is true |
+| Authorization | Exact reviewer grants have a submission scope and expiry | Reviewer access must be granted by the requester |
+| Non-repudiation | Sui signatures record creation, grant, approval, payout, and refund actions | It proves chain actions, not original authorship of the material |
+| Availability | Walrus distributed storage and recorded storage epoch preserve ciphertext availability | Sui RPC, Walrus, and Seal key servers remain operational dependencies |
 
-상세 증거와 미완료 범위는 [검증 기록](artifacts/verification.md), 시연 순서는 [데모 스크립트](docs/DEMO-SCRIPT.md), 제출 문안은 [SUBMISSION](docs/SUBMISSION.md), package 배포 정보는 [DEPLOYMENT](contracts/DEPLOYMENT.md)를 참고하세요.
+## Testnet evidence
 
-## 공개 정적 미리보기 범위
+### Full AI Review and payout run
 
-공식 공개 미리보기는 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)이며, 정적 읽기 전용 화면이 로드되는 것을 확인했습니다.
+- Bounty: [0x040467…a2bd4](https://suiscan.xyz/testnet/object/0x040467c0954dae110f222af8ca37aa3a67b4a6160454e4a42ff38bffc8ba2bd4)
+- Submission: [0xa32ff1…31af6](https://suiscan.xyz/testnet/object/0xa32ff16c3708e47511583b1548af38917a77cbc7c3bef82be7a3024fa9b31af6)
+- Walrus blob: `EDoj9-ETZbZ10_wlSCTFB3Kl7py-KuDb6Qc1h9byq9c`
+- Reviewer grant: [HcAvLYUU…zrtt](https://suiscan.xyz/testnet/tx/HcAvLYUU5X1p4RMHeSLSdf2HWYAip1ZE78F1C5tyzrtt)
+- Payout: [9aDuBYce…YcaR](https://suiscan.xyz/testnet/tx/9aDuBYceNVdKUDLdZNcq54eCB6K6WZCLVZu18TYLYcaR)
 
-그 미리보기는 DataBounty의 **정적 UI, 구조 설명, 그리고 이미 기록된 Testnet package·escrow 증거를 읽어 보는 공개 화면**입니다. 서버나 비밀 설정을 포함하지 않으며, 방문자의 지갑이나 데이터를 사용하지 않습니다.
+### Separate requester/contributor settlement
 
-지갑 연결·인증, API 호출, 업로드와 기여자 제출, AI 검토, payout, refund, cancel은 이 화면에서 비활성화됩니다. Walrus·Seal 처리와 reviewer 권한 부여·회수도 연결하지 않으며, 이 공개 화면은 live backend 또는 end-to-end 동작의 증거가 아닙니다. 실제 통합의 현재 증거와 E2E 한계는 [검증 기록](artifacts/verification.md)을 기준으로 합니다.
+- Requester: `0x3974b995fceb96dbec7247dc1e7a6c53e539c86769733e362f1b40a82cd14af2`
+- Contributor: `0xeefc56c778f3877def3aa5460295cb4f1fcb89cc76f332882f0b34b7ebde021e`
+- Bounty: [0x317efc…bcc255](https://suiscan.xyz/testnet/object/0x317efc01790d938434c3a484d305cc20b21a011389f2bd13830625ff29bcc255)
+- Accepted payout: [73SZwma8…BhFj](https://suiscan.xyz/testnet/tx/73SZwma8mbsZ4ZK3rozBbva4CugEKEePjcyivxwCBhFj)
 
-## 데모 과제
+### Expiry refund
 
-모든 데모 입력은 합성 자료입니다. 초기 시연은 `한국어 피싱 문자 분류 학습용 사례 1건`을 사용하며, 공개 스키마는 `message`, `scam_type`, `red_flags`, `redacted_source_note`입니다.
+- Refunded Bounty: `0x0f0ce45bc348bec4e7a2cd740b79ad6c9987c9cbb90413de0bcf6a58a7b018c4`
+- Refund: [ANznJg8A…KkMM](https://suiscan.xyz/testnet/tx/ANznJg8AmDmSJwrRkZyELZ4XVeM2NzrGXqidSPfpKkMM)
 
-DataBounty는 자료의 진실성, 저작권, 학습 적법성, AI 생성 여부를 자동으로 증명하지 않습니다. AI는 공개된 수용 기준 안에서 형식·텍스트 중복·근거만 보조하고, 요청자가 원문과 검토 카드를 보고 승인 책임을 집니다.
+## Run locally
 
-## 동작 흐름
-
-1. 요청자가 Sui Testnet에서 과제, 마감, 보상을 입력해 `Bounty`에 SUI를 예치합니다.
-2. 기여자가 UTF-8 `.txt` 또는 `.md` 사례를 준비합니다. 브라우저는 `BCS(bounty_id, submission_id)`에 묶어 Seal로 암호화합니다.
-3. 암호문만 Walrus에 저장하고 readback digest가 일치하면 `Submission`을 `READY`로 확정합니다.
-4. 요청자는 특정 READY 제출본에 한정해 reviewer delegate의 읽기 권한을 부여합니다.
-5. 서버는 현재 Sui 상태·bounty/submission binding·Seal 접근·plaintext commitment를 확인한 뒤 task spec과 허용된 제출본만 모델에 보냅니다. 응답은 recommendation, checklist, duplicateCandidates, exact UTF-8 citations를 포함합니다.
-6. 요청자만 `approve_submission_and_pay`를 서명할 수 있습니다. Move는 승인한 정확한 `submission_id`의 contributor에게 escrow 전액을 한 번 지급합니다.
-
-MVP는 한 Bounty당 한 최종 수상 제출과 한 번의 전액 지급만 지원합니다. 여러 수상자와 분할 지급은 범위 밖입니다.
-
-## 권한과 저장 경계
-
-| 주체 | 할 수 있는 일 | 보상 이동 |
-| --- | --- | --- |
-| 요청자 | 자기 Bounty 생성, 검토 권한 부여·회수, 거절, 승인, 규칙상 환불 | 승인 또는 규칙상 환불만 |
-| 기여자 | 자기 사례 예약·암호화·등록, 상태 확인 | 수령만 |
-| reviewer AI delegate | 명시적으로 grant된 정확한 READY/ACCEPTED 제출본 읽기 | 불가 |
-| 임의 지갑·서버 | 원문·검토 권한·escrow 제어 불가 | 불가 |
-
-Sui에는 공개 과제, 객체 ID, commitment, 암호문 digest, Walrus blob reference, 상태와 이벤트만 기록됩니다. 원문, 파일명, salt, 키, 세션은 체인과 일반 metadata DB에 저장하지 않습니다. Walrus에는 공개적으로 발견 가능한 **암호문만** 저장합니다.
-
-Seal 회수는 현재 상태를 반영한 새 key 요청만 막습니다. 이미 열린 평문, 내려받은 파일, 스크린샷, 모델 입력은 되돌릴 수 없습니다. Testnet SUI는 실제 현금·급여·보험금이 아닙니다.
-
-## 로컬 실행
-
-필요 조건은 Node.js 24 이상, npm 11, Sui Testnet 지갑, 그리고 AI 검토용 reviewer delegate 설정입니다.
+Requirements: Node.js 24+, npm 11+, a Sui Testnet wallet, and a configured reviewer delegate.
 
 ```sh
 npm ci
 cp .env.example .env
-npm run setup:local-ai
-```
-
-로컬 AI는 gitignored `.runtime/mlx`에 `mlx-lm==0.31.3`과 `mlx-community/Qwen3-1.7B-4bit`를 설치합니다. `.env`에는 다음처럼 설정합니다.
-
-```dotenv
-AI_PROVIDER=mlx-local
-AI_BASE_URL=http://127.0.0.1:8092/v1
-AI_MODEL=mlx-community/Qwen3-1.7B-4bit
-```
-
-`AI_API_KEY`는 로컬 provider용 non-empty placeholder여도 됩니다. `REVIEWER_DELEGATE_PRIVATE_KEY`, `COOKIE_SECRET`, `SEAL_API_KEY`, 실제 API 키와 `.env`는 절대 커밋하거나 화면에 표시하지 않습니다. `DATABOUNTY_PACKAGE_ID`와 `VITE_DATABOUNTY_PACKAGE_ID`에는 현재 package ID를 넣습니다.
-
-### 향후 Groq 전환 (현재 비활성)
-
-`.env.example`의 `GROQ_*` 값은 참고용이며 앱이 읽지 않습니다. 전환할 때는 노출된 키를 먼저 폐기·교체한 뒤, 새 Groq 키를 로컬 `.env`의 서버 전용 설정 또는 Vercel 프로젝트의 서버 secret에 넣고 기존 `AI_*` 항목을 다음처럼 설정합니다.
-
-```dotenv
-AI_PROVIDER=openai-compatible
-AI_BASE_URL=https://api.groq.com/openai/v1
-AI_API_KEY=<rotated-groq-key>
-AI_MODEL=<supported-groq-model>
-```
-
-`GROQ_*` 값을 `VITE_*`로 복사하거나 브라우저 코드에 넣지 않습니다. 현재 로컬 데모의 기본 provider는 위 MLX 설정을 유지합니다.
-
-```sh
-# terminal 1
-npm run start:local-ai
-
-# terminal 2
 npm run build
 npm start
 ```
 
-브라우저에서 `http://127.0.0.1:3000`을 열고 Slush를 Sui Testnet에 연결합니다. `npm start`는 root `.env`를 읽어 앱과 API를 same-origin으로 제공합니다.
+Open `http://127.0.0.1:3000`, connect a Testnet wallet, then authenticate by signing a personal message. The signature is browser authentication, not a payment.
 
-## 검증
+### Configuration
+
+Copy `.env.example` and provide Testnet endpoints plus server-only secrets:
+
+```dotenv
+APP_ORIGIN=http://127.0.0.1:3000
+COOKIE_SECRET=<server-only-random-secret>
+REVIEWER_DELEGATE_PRIVATE_KEY=<server-only-reviewer-key>
+AI_PROVIDER=groq
+AI_BASE_URL=https://api.groq.com/openai/v1
+AI_API_KEY=<server-only-api-key>
+AI_MODEL=openai/gpt-oss-20b
+```
+
+Never commit `.env`, API keys, wallet private keys, Seal API keys, browser signatures, plaintext submissions, or salts. `VITE_*` settings are public browser configuration only.
+
+## Deploy to Vercel
+
+The production app runs its Fastify API through `api/index.mjs` and routes `/api/*` to the serverless function.
+
+```sh
+npx vercel --prod --yes
+```
+
+Set server-only configuration as Vercel production environment variables. Set public `VITE_SUI_*`, `VITE_DATABOUNTY_PACKAGE_ID`, `VITE_SEAL_*`, and `VITE_WALRUS_AGGREGATOR_URL` values for the browser bundle.
+
+The current demo uses SQLite under Vercel `/tmp`, which is appropriate for a short-lived Demo Day session but not persistent production metadata. A production rollout should use durable managed storage and KMS-backed reviewer key management.
+
+## Verify
 
 ```sh
 npm run typecheck
 npm run lint
-npm run build
 npm test
+npm run build
 sui move test --path contracts
-SSL_CERT_FILE=/etc/ssl/cert.pem sui client verify-source contracts
+git diff --check
 ```
 
-마지막 기록상 app 테스트 9개, server 테스트 12개, Move 테스트 22개와 typecheck, lint, build가 통과했습니다. 이 자동 검증은 서버 재시작 뒤의 브라우저 지갑 인증과 실제 payout/refund를 대체하지 않습니다.
-
-## 현재 시연을 끝내는 순서
-
-1. 서버를 현재 build로 재시작한 뒤, 요청자 지갑으로 `Sign in for reviews`의 personal-message를 Slush에서 서명하고 같은 브라우저 세션에서 Bounty를 불러옵니다.
-2. 별도 기여자 지갑으로 합성 피싱 사례를 reserve → Seal encrypt → Walrus publish/readback → finalize하여 `READY` Submission을 만듭니다.
-3. 요청자가 reviewer delegate에 해당 exact Submission 읽기 권한을 부여하고 AI review를 실행해 검토 카드와 citation을 확인합니다.
-4. 요청자가 검토 결과와 원문을 보고 `Approve and pay exact contributor`를 서명합니다. 지급 event, Bounty `PAID`, contributor 수령을 확인합니다.
-5. 별도 만료 Bounty로 `refund_expired_bounty`도 실행해 refund event와 `EXPIRED_REFUNDED` 상태를 확인합니다.
-
-그 전까지는 “실제 end-to-end payout/refund를 완료했다”고 주장하지 않습니다.
-
-## 구조
+## Repository map
 
 ```text
-app/        React/Vite 지갑 UI, 브라우저 Seal 암호화, Sui 거래 구성
-server/     Fastify 인증, metadata-only SQLite, Sui/Walrus/Seal/AI 검토 경계
-contracts/  DataBounty Move escrow·Submission lifecycle·Seal 승인 정책
-demo/       공개 가능한 합성 입력
-docs/       설계, 시연 및 제출 문안
-artifacts/  검증 상태와 네트워크 식별자
+app/        React/Vite wallet UI, browser Seal encryption, Sui transactions
+server/     Fastify API, auth, Sui/Walrus/Seal/Groq boundaries
+contracts/  Move Bounty, Submission lifecycle, Seal approval policy
+api/        Vercel serverless entrypoint
+demo/       Synthetic phishing cases for safe demonstrations
+docs/       Architecture, submission material, Demo Day runbook
+artifacts/  Live Testnet evidence and backup screenshots
 ```
+
+## Scope
+
+Lighthouse is a Testnet demonstration. It does not guarantee data truth, copyright ownership, legality, or real-world provenance. It makes encrypted storage, access authority, approval, and reward settlement verifiable.
