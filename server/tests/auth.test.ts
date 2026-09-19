@@ -66,6 +66,18 @@ test('successful verification creates a session address atomically', async () =>
   db.close();
 });
 
+test('a verified session survives loss of ephemeral session rows', async () => {
+  const db = new DraftProofDb(':memory:');
+  const auth = new AuthService(db, config);
+  const keypair = Ed25519Keypair.generate();
+  const issued = auth.challenge(keypair.toSuiAddress());
+  const { signature } = await keypair.signPersonalMessage(new TextEncoder().encode(issued.message));
+  const verified = await auth.verify(issued.challengeId, issued.message, signature);
+  db.database.exec('DELETE FROM sessions');
+  assert.equal(auth.sessionAddress(verified.token), keypair.toSuiAddress());
+  db.close();
+});
+
 test('session insert failure rolls back challenge claim so it remains retryable', () => {
   const db = new DraftProofDb(':memory:');
   const address = `0x${'11'.repeat(32)}` as `0x${string}`;
