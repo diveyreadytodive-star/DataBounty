@@ -1,12 +1,12 @@
-# DataBounty 검증 기록
+# DataBounty 검증 기록 — 2026-09-14 사전 E2E 스냅샷
 
 검증 기준일: 2026-09-14 KST
-네트워크: Sui Testnet. Walrus와 Seal은 실제 contributor 제출 단계에서 다시 확인해야 합니다.
-판정: **package 배포와 한 건의 Bounty escrow 생성은 완료. 전체 브라우저 end-to-end 시연은 미완료.**
+네트워크: Sui Testnet. 이 문서는 live contributor flow 이전에 작성된 사전 검증 스냅샷입니다.
+판정: **역사적 기록. 현재 Testnet E2E 상태는 `artifacts/evidence/SUI-WALRUS-SEAL-LIVE-PROOF.md`와 README를 기준으로 합니다.**
 
 이 문서는 공개 가능한 객체 ID, transaction digest, 정적 검증 결과만 기록합니다. private key, API key, cookie, signature, 평문, salt, 지갑 잔액은 포함하지 않습니다.
 
-## 공개 정적 미리보기 상태
+## 당시 공개 정적 미리보기 상태
 
 공식 공개 미리보기 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)는 정적 읽기 전용 화면이 로드되는 것을 확인했습니다. 확인한 Vercel deployment는 [https://databounty-5kc0tpywk-momento5.vercel.app](https://databounty-5kc0tpywk-momento5.vercel.app)이고, 연결된 commit은 `5802c96`입니다.
 

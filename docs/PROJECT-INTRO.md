@@ -33,16 +33,16 @@ DataBounty의 요청자는 과제와 보상을 여는 팀이고, 기여자는 �
 - Groq review: `openai/gpt-oss-20b`, `RECOMMEND_ACCEPT`, validated UTF-8 citation `0–747`
 - Payout: `9aDuBYceNVdKUDLdZNcq54eCB6K6WZCLVZu18TYLYcaR`; Bounty `PAID`, Submission `ACCEPTED`
 - Fresh post-payout reviewer Seal key request: denied
-- Automated verification: app 17, server 19, Move 22 tests plus typecheck, lint, and production build passed
+- Automated verification: app·server·Move tests, typecheck, lint, and production build passed
 
-## 공개 정적 미리보기
+## 운영 Testnet 앱
 
-공식 공개 미리보기는 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)입니다. 최신 production deployment `dpl_71qPR1YchLxByVkJZrkq3qeuACRL`는 HTTP `200` 및 `Lighthouse — DataBounty on Sui Testnet` title로 확인했습니다.
+공식 앱은 [https://databounty-wine.vercel.app](https://databounty-wine.vercel.app)입니다. 지갑 연결, 브라우저 인증, 바운티 생성, 암호화 제출, reviewer grant, AI Review, 요청자 지급 흐름을 Testnet에서 제공합니다.
 
-이 미리보기는 DataBounty의 화면 흐름과 아키텍처, 그리고 아래 Testnet 증거를 공개적으로 검토하기 위한 읽기 전용 정적 화면입니다. 지갑 연결·인증, API 호출, 업로드와 실제 제출, AI 검토, payout, refund, cancel은 비활성화되어 있습니다. Walrus·Seal 접근과 reviewer 권한 변경도 연결하지 않으므로, 호스팅된 화면이 로드된 사실은 live backend 또는 end-to-end 동작의 증거가 아닙니다.
+운영 앱의 작동 여부와 별개로, 실제 Testnet 증거는 아래 transaction·object·Walrus blob 식별자와 live evidence packet으로 검증합니다. 서버 비밀값, 원문, salt, 복호화 key, 서명은 배포 앱과 저장소에 포함하지 않습니다.
 
 ## 현재 한계
 
-실제 Testnet flow는 escrow, encrypted submission, Walrus readback, Seal reviewer access, Groq review, requester payout, payout 후 fresh Seal denial까지 검증됐습니다. 다만 해당 live run은 동일 지갑으로 requester와 contributor 역할을 수행했으므로, 서로 다른 두 지갑 재현과 deadline refund는 아직 추가 증거가 필요합니다.
+실제 Testnet flow는 escrow, encrypted submission, Walrus readback, Seal reviewer access, Groq review, requester payout, payout 후 fresh Seal denial까지 검증됐습니다. 별도 requester·contributor 지갑 간 지급과 별도 만료 Bounty의 refund도 기록했습니다.
 
-원문·파일명·salt·키·세션은 체인과 일반 metadata DB에 저장하지 않습니다. Seal revoke는 새 key 요청을 막지만 이미 열람·다운로드·모델 입력으로 전달된 평문을 회수하지는 못합니다. Testnet SUI는 실제 현금 보상이 아닙니다.
+원문·파일명·salt·키·세션은 체인과 일반 metadata DB에 저장하지 않습니다. Seal revoke는 새 key 요청을 막지만 이미 열람·다운로드·모델 입력으로 전달된 평문을 회수하지는 못합니다. Testnet SUI는 실제 현금 보상이 아닙니다. 현재 MVP는 텍스트 사례를 대상으로 하며, 자산별 템플릿과 Finalist Lock은 다음 단계입니다.

@@ -1,6 +1,6 @@
 # Lighthouse by DataBounty
 
-**희소 데이터를 암호화해 받고, AI Review가 근거를 구조화한 뒤, requester만 정확한 contributor에게 Sui Testnet 보상을 지급하는 검증 가능한 데이터 기여 플랫폼입니다.**
+**Lighthouse는 희소한 AI 학습 사례를 바운티 방식으로 모집하는 정보 자산 플랫폼입니다. 요청자는 Testnet SUI를 에스크로에 예치하고, 기여자는 암호화된 사례를 제출하며, AI Review가 근거를 정리한 뒤 요청자가 최종 지급을 승인합니다.**
 
 **Live app:** [databounty-wine.vercel.app](https://databounty-wine.vercel.app)
 **Network:** Sui Testnet
@@ -16,6 +16,8 @@ AI·리서치 팀은 특정 형식의 희소 사례가 필요하지만, 단순 �
 4. **Requester**만 AI 근거를 본 뒤 payout transaction을 서명할 수 있습니다.
 
 AI는 지급 권한이 없습니다. Sui Move가 승인된 정확한 submission의 contributor에게 escrow를 한 번만 보냅니다.
+
+현재 MVP는 합성 피싱 사례처럼 구조화 가능한 UTF-8 `.txt`·`.md` 텍스트 제출을 다룹니다. 코드, 사고 보고서, 리서치 자료 같은 정보 자산은 자산별 템플릿과 검증 규칙을 추가하는 다음 단계의 범위입니다.
 
 ## Live verification
 
@@ -166,3 +168,9 @@ artifacts/  Live Testnet evidence and backup screenshots
 ## Scope
 
 Lighthouse is a Testnet demonstration. It does not guarantee data truth, copyright ownership, legality, or real-world provenance. It makes encrypted storage, access authority, approval, and reward settlement verifiable.
+
+## Roadmap
+
+- **P1 — 거래 보호:** 요청자가 원문 열람을 선택한 뒤 장기간 미지급하는 상황을 막기 위한 Finalist Lock과 Claim Window
+- **P1 — 자산별 제출 규칙:** 정보 자산 유형별 템플릿, 권리 보유 확인, 개인정보·금지 자료 사전 점검
+- **P2 — AI 리뷰 고도화:** 승인·거절·분쟁 결과가 쌓인 뒤 자산 유형별 중복 탐지와 품질 검토 개선

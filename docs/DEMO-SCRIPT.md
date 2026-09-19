@@ -1,17 +1,16 @@
 # DataBounty 데모 스크립트
 
-상태: 실제 escrow까지 완료, contributor·AI·payout/refund 브라우저 시연은 대기 중
+상태: escrow, contributor encrypted submission, Walrus readback, Seal reviewer access, Groq AI review, requester payout, payout 후 fresh Seal denial, 별도 expiry refund까지 Testnet 증거가 기록됨
 데모 데이터: 합성 한국어 피싱 문자 사례만 사용
 목표: 요청자 승인에만 정확한 제출본의 Testnet SUI 보상이 한 번 지급되는 과정을 보여준다.
 
 ## 녹화 전 준비
 
-- `npm run setup:local-ai`를 한 번 실행하고 `npm run start:local-ai`로 local Qwen server를 시작합니다.
-- `.env`에는 `AI_PROVIDER=mlx-local`, `AI_BASE_URL=http://127.0.0.1:8092/v1`, `AI_MODEL=mlx-community/Qwen3-1.7B-4bit`를 설정합니다. 비밀값은 화면에 보이지 않게 합니다.
-- Groq 전환은 현재 비활성입니다. 필요할 때 노출된 키를 먼저 교체하고, 새 키를 로컬 `.env` 또는 Vercel의 서버 secret에 넣은 뒤 `AI_PROVIDER=openai-compatible`, `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL`을 설정합니다. `GROQ_*`나 키를 `VITE_*`로 복사하지 않고 브라우저에 노출하지 않습니다.
+- 현재 검토 provider는 Groq `openai/gpt-oss-20b`입니다. API key와 reviewer delegate key는 서버 환경 변수에만 둡니다.
+- 로컬 재현 시에도 `AI_PROVIDER`, `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL`을 서버 환경에만 설정합니다. 키를 `VITE_*`나 화면에 노출하지 않습니다.
 - 다른 터미널에서 `npm run build && npm start`를 실행하고 `http://127.0.0.1:3000`을 엽니다.
-- 요청자 A와 기여자 B를 서로 다른 Sui Testnet 지갑으로 준비합니다. Bounty `0x0f0ce45bc348bec4e7a2cd740b79ad6c9987c9cbb90413de0bcf6a58a7b018c4`는 A가 만든 현재 demo Bounty입니다.
-- 서버를 현재 build로 재시작한 뒤 Slush personal-message와 Bounty load를 같은 브라우저 세션에서 끝까지 리허설합니다. 이 browser-auth E2E는 아직 증명되지 않았습니다.
+- 요청자 A와 기여자 B를 서로 다른 Sui Testnet 지갑으로 준비하고, 현장 시연용 새 Bounty를 생성합니다. 과거 refund Bounty나 지급 완료 Bounty를 재사용하지 않습니다.
+- 서버를 현재 build로 재시작한 뒤 Slush personal-message와 Bounty load를 같은 브라우저 세션에서 끝까지 리허설합니다. 서명된 브라우저 세션은 serverless 재시작 뒤에도 검증되도록 구성했습니다.
 - Slush popup의 서명은 사용자가 직접 확인합니다. personal-message는 로그인용이며 자금을 이동하지 않습니다. transaction은 action·recipient·amount을 먼저 확인합니다.
 - private key, API key, cookie, signature, plaintext 파일 전체, 개인 정보, 지갑 잔액을 촬영하지 않습니다.
 
@@ -57,7 +56,7 @@
 2. AI review를 실행합니다.
 3. `recommendation`, required-field checklist, duplicate candidate, 정확한 UTF-8 byte citations를 표시합니다.
 
-> 서버는 task spec과 이 정확한 READY 제출본의 Sui binding·Seal access·commitment를 확인한 뒤에만 local Qwen에 검토를 요청합니다. AI는 제출의 진실성이나 저작권을 판정하지 않고, 누락 필드·명백한 텍스트 중복·인용 근거만 정리합니다.
+> 서버는 task spec과 이 정확한 READY 제출본의 Sui binding·Seal access·commitment를 확인한 뒤에만 Groq AI Review를 요청합니다. AI는 제출의 진실성이나 저작권을 판정하지 않고, 누락 필드·비교 대상으로 제공된 승인 사례의 중복 후보·인용 근거만 정리합니다.
 
 ## 1:50–2:20 — 요청자의 승인과 단 한 번의 지급
 
@@ -89,4 +88,4 @@ reviewer grant를 revoke한 뒤, 새로운 Seal session의 key request가 거절
 - [ ] reviewer revoke 후 fresh Seal key request 거절
 - [ ] 모든 사례가 합성 자료이며 비밀·원문·개인 정보가 캡처에 없음
 
-현재는 첫 escrow 행만 실제 완료 증거가 있습니다. 나머지 체크가 끝나기 전에는 완성된 end-to-end 데모라고 소개하지 않습니다.
+위 항목은 live evidence packet과 별도 requester·contributor 지급 기록으로 검증됐습니다. 현장에서는 같은 흐름을 다시 시연하되, 지갑 서명과 네트워크 응답 지연에 대비해 증거 링크를 함께 준비합니다.

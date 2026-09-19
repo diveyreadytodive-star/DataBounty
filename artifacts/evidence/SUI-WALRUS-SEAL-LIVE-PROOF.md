@@ -76,9 +76,9 @@ The separate expired, empty Bounty was refunded by its requester through the Tes
 | Terminal state | `EXPIRED_REFUNDED` |
 | Remaining escrow | `0 MIST` |
 
-## 7. Public read-only preview
+## 7. Deployed Testnet application
 
-The latest static presentation is publicly available at [databounty-wine.vercel.app](https://databounty-wine.vercel.app). Production deployment `dpl_71qPR1YchLxByVkJZrkq3qeuACRL` returned HTTP `200` with title `Lighthouse — DataBounty on Sui Testnet`. It contains no wallet, API, upload, review, or payout controls and no backend secret.
+The deployed Lighthouse app is available at [databounty-wine.vercel.app](https://databounty-wine.vercel.app). It provides wallet authentication, Bounty creation, encrypted contribution, reviewer grant, AI Review, and requester-signed payout routes for the configured Sui Testnet environment. Server secrets, plaintext submissions, salts, and decryption keys are not included in the browser bundle or this repository.
 
 ## 8. Separate-wallet Testnet settlement
 
